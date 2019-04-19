@@ -1,8 +1,9 @@
 package server.state;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class GraphicalObject {
+public class GraphicalObject implements Serializable {
 
     // ID of client origin
     private final long ID;
@@ -35,7 +36,44 @@ public class GraphicalObject {
 
     public GraphicalObject(long ID, String value) {
         this.ID = ID;
+        String[] parts = value.split(" ");
 
+        // ShapeType
+        switch (parts[0]) {
+            case "Circle":
+                type = ShapeType.Circle;
+                break;
+            case "Triangle":
+                type = ShapeType.Triangle;
+                break;
+            case "Rectangle":
+                type = ShapeType.Rectangle;
+                break;
+            default:
+                type = ShapeType.Circle;
+        }
+
+        // Color
+        switch (parts[1]) {
+            case "Black":
+                color = Color.BLACK;
+                break;
+            case "Red":
+                color = Color.RED;
+                break;
+            case "Green":
+                color = Color.GREEN;
+                break;
+            case "Blue":
+                color = Color.BLUE;
+                break;
+            default:
+                color = Color.BLACK;
+        }
+
+        width = Integer.parseInt(parts[2]);
+        height = Integer.parseInt(parts[3]);
+        p = new Point(Integer.parseInt(parts[4]), Integer.parseInt(parts[5]));
     }
 
     public long getID() {

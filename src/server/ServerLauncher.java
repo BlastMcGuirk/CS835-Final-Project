@@ -5,6 +5,7 @@ import server.state.Canvas;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.concurrent.Executors;
 
@@ -29,6 +30,8 @@ public class ServerLauncher {
                     e.printStackTrace();
                 }
             });
+            t.start();
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> RMIService.stop(canvas)));
         }
         if (code == 2) {
             // Start Socket service in new thread
@@ -39,7 +42,8 @@ public class ServerLauncher {
                     var pool = Executors.newFixedThreadPool(200);
                     while (true) {
                         // new connection
-                        listener.accept();
+                        Socket s = listener.accept();
+
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
