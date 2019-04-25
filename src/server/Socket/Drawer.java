@@ -1,7 +1,7 @@
 package server.Socket;
 
 import server.state.Canvas;
-import server.Socket.operations.AddOperation;
+import server.state.GraphicalObject;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -33,8 +33,15 @@ public class Drawer implements Runnable {
         } catch (Exception e){
             e.printStackTrace();
         } finally {
-            try { socket.close(); } catch (IOException ignored) {}
+            try {
+                canvas.removeSocketConnection(this);
+                socket.close();
+            } catch (IOException ignored) {}
         }
+    }
+
+    public void tell(String message) {
+        output.println(message);
     }
 
     private void processCommands() {
@@ -43,10 +50,14 @@ public class Drawer implements Runnable {
             if (command.startsWith("LEAVE")) {
                 return;
             } else if (command.startsWith("ADD")){
-                AddOperation addOp = new AddOperation(ID, command.substring(4));
-                if (addOp.isValid()) {
-                    canvas.requestOperation(addOp);
-                }
+                GraphicalObject go = new GraphicalObject(ID, command.substring(4));
+                canvas.addShape(go);
+            } else if (command.startsWith("REMOVE_MINE")) {
+                canvas.removeAll(ID);
+            } else if (command.startsWith("REMOVE_ALL")) {
+                canvas.removeAll();
+            } else if (command.startsWith("UNDO")) {
+                canvas.undo(ID);
             }
         }
     }
@@ -54,5 +65,15 @@ public class Drawer implements Runnable {
     private void setup() throws IOException {
         input = new Scanner(socket.getInputStream());
         output = new PrintWriter(socket.getOutputStream(), true);
+
+        output.println("WELCOME " + ID);
+        for (GraphicalObject go : canvas.getShapeList()) {
+            output.println("ADDED " + go.getID() + " " + go);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Drawer ID[" + ID + "]";
     }
 }

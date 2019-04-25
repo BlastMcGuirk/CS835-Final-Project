@@ -22,17 +22,17 @@ public class RMIService {
         registry.rebind(BINDING_NAME, canvas);
     }
 
-    public static boolean stop(Canvas canvas) {
+    public static void stop(Canvas canvas) {
         if (registry == null) {
             // No registry running, throw exception
             throw new IllegalStateException("Server not running");
         }
+        System.out.println("Shutting down RMI service...");
         try {
             registry.unbind(BINDING_NAME);
             registry = null;
-            return UnicastRemoteObject.unexportObject(canvas, false);
+            UnicastRemoteObject.unexportObject(canvas, false);
         } catch (Exception ignored) {}
-        return false;
     }
 
 }

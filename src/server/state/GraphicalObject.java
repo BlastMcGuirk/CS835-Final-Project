@@ -9,7 +9,9 @@ public class GraphicalObject implements Serializable {
     private final long ID;
 
     // Type of shape to be drawn
-    public enum ShapeType{Circle, Triangle, Rectangle}
+    public enum ShapeType{Circle { public String toString() { return "Circle"; } },
+                        Triangle { public String toString() { return "Triangle"; } },
+                        Rectangle { public String toString() { return "Rectangle"; } } }
     private final ShapeType type;
 
     // Values of width and height
@@ -21,17 +23,13 @@ public class GraphicalObject implements Serializable {
     // Location on canvas
     private final Point p;
 
-    public GraphicalObject(long ID, ShapeType type, int width, int height, Color color, Point p) {
+    public GraphicalObject(long ID, ShapeType type, Color color, int width, int height, Point p) {
         this.ID = ID;
         this.type = type;
+        this.color = color;
         this.width = width;
         this.height = height;
-        this.color = color;
         this.p = p;
-    }
-
-    public GraphicalObject() {
-        this(0, ShapeType.Circle, 50, 50, Color.BLACK, new Point(0,0));
     }
 
     public GraphicalObject(long ID, String value) {
@@ -94,5 +92,22 @@ public class GraphicalObject implements Serializable {
 
     public Color getColor() {
         return color;
+    }
+
+    private String getColorName() {
+        if (color == Color.BLACK) return "Black";
+        if (color == Color.RED) return "Red";
+        if (color == Color.GREEN) return "Green";
+        if (color == Color.BLUE) return "Blue";
+        return "BLACK";
+    }
+
+    public Point getPoint() {
+        return p;
+    }
+
+    @Override
+    public String toString() {
+        return type.toString() + " " + getColorName() + " " + width + " " + height + " " + p.x + " " + p.y;
     }
 }

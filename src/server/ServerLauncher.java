@@ -1,15 +1,17 @@
 package server;
 
 import server.RMI.RMIService;
+import server.Socket.SocketService;
 import server.state.Canvas;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.concurrent.Executors;
 
 public class ServerLauncher {
+
+    public static final int RMI_PORT = 1099;
+    public static final int SOCKET_PORT = 1100;
 
     public static void main(String[] args) {
         // args[1]:
@@ -18,37 +20,36 @@ public class ServerLauncher {
         //		3 = Both
         Canvas canvas = new Canvas();
 
-        int code = Integer.parseInt(args[1]);
-        if (code == 1) {
+        int code = Integer.parseInt(args[0]);
+        if (code == 1 || code == 3) {
             // Start RMI service in new thread
-            Thread t = new Thread(() -> {
+            Thread RMIThread = new Thread(() -> {
                 System.out.println("Starting RMI service...");
-                int port = 1099;
                 try {
-                    RMIService.start(port, canvas);
+                    RMIService.start(RMI_PORT, canvas);
+                    System.out.println("RMI service running.");
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
             });
-            t.start();
+            RMIThread.start();
+
             Runtime.getRuntime().addShutdownHook(new Thread(() -> RMIService.stop(canvas)));
         }
-        if (code == 2) {
+        if (code == 2 || code == 3) {
             // Start Socket service in new thread
-            Thread t = new Thread(() -> {
-                int port = 1100;
-                try (var listener = new ServerSocket(port)) {
-                    System.out.println("Canvas server is running...");
-                    var pool = Executors.newFixedThreadPool(200);
-                    while (true) {
-                        // new connection
-                        Socket s = listener.accept();
-
-                    }
+            Thread SocketThread = new Thread(() -> {
+                System.out.println("Starting Socket service...");
+                try (var listener = new ServerSocket(SOCKET_PORT)) {
+                    System.out.println("Socket service running:");
+                    System.out.println("    Host: " + listener.getInetAddress().getHostName());
+                    System.out.println("    Port: " + SOCKET_PORT);
+                    SocketService.start(listener, canvas);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
+            SocketThread.start();
         }
     }
 
