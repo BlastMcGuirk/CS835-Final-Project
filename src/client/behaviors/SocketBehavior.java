@@ -94,11 +94,7 @@ public class SocketBehavior implements Behavior{
                     goList.add(new GraphicalObject(idValue, graphicalObject));
                 } else if (response.startsWith("REMOVED_FROM")) {
                     long idValue = Long.parseLong(response.substring(13));
-                    for (GraphicalObject go : goList) {
-                        if (go.getID() == idValue) {
-                            goList.remove(go);
-                        }
-                    }
+                    goList.removeIf(go -> go.getID() == idValue);
                 } else if (response.startsWith("REMOVED_ALL")) {
                     goList.clear();
                 } else if (response.startsWith("UNDID")) {

@@ -60,11 +60,7 @@ public class Canvas implements Remote {
 
     public synchronized void removeAll(long ID) {
         // remove all shapes with ID from shapeList
-        for (GraphicalObject go : shapeList) {
-            if (go.getID() == ID) {
-                shapeList.remove(go);
-            }
-        }
+        shapeList.removeIf(go -> go.getID() == ID);
         tellAllDrawers("REMOVED_FROM " + ID);
         versionNumber.incrementAndGet();
     }
