@@ -6,6 +6,15 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 
+/**
+ * The GOInfoPanel or GraphicalObjectInformationPanel acts as a
+ * builder for GraphicalObjects. The user can specify shape type,
+ * color, width, and height, and given a point, will generate
+ * a GraphicalObject with those values. This panel holds 2
+ * JComboBoxes for selecting shape type and color, as well as
+ * 2 JSpinners for selecting width/height. Width/Height have an
+ * upper limit of 100, and a lower limit of 10.
+ */
 class GOInfoPanel extends JPanel {
 
     private JComboBox<GraphicalObject.ShapeType> typeValue;
@@ -19,6 +28,8 @@ class GOInfoPanel extends JPanel {
         colorValue = new JComboBox<>(new String[] {"Black", "Red", "Green", "Blue"} );
         widthValue = new JSpinner(new SpinnerNumberModel(50, 10, 100, 1));
         heightValue = new JSpinner(new SpinnerNumberModel(50, 10, 100, 1));
+
+        // Align JObjects in panel
         setLayout(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
         gc.gridx = 0; gc.anchor = GridBagConstraints.LINE_END;
@@ -33,10 +44,12 @@ class GOInfoPanel extends JPanel {
         gc.gridy = 3; add(heightValue, gc);
     }
 
+    // Makes a GraphicalObject given a point.
     GraphicalObject makeGraphicalObject(long userId, Point p) {
         return new GraphicalObject(userId, getShapeType(), getShapeColor(), getShapeWidth(), getShapeHeight(), p);
     }
 
+    // The following methods are used to retrieve values from the JObjects.
     private GraphicalObject.ShapeType getShapeType() { return (GraphicalObject.ShapeType) typeValue.getSelectedItem(); }
     private Color getShapeColor() { switch (colorValue.getSelectedIndex()) {
         case 0:

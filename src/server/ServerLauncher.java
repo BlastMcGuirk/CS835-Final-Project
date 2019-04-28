@@ -14,7 +14,7 @@ public class ServerLauncher {
     public static final int SOCKET_PORT = 1100;
 
     public static void main(String[] args) {
-        // args[1]:
+        // args[0]:
         //		1 = RMI
         //		2 = Socket
         //		3 = Both

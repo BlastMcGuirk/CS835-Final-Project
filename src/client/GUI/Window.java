@@ -8,40 +8,80 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+/**
+ * JFrame for the GUI. The Window holds all the parts of the client.
+ * It's behavior is specified by it's Behavior object.
+ */
 public class Window extends JFrame {
-
+    // Behavior of the client
     private Behavior behavior;
 
-    private JButton removeYours, removeAll, undo;
-    private GOInfoPanel infoPanel;
-    private DrawnShapesPanel drawnShapes;
+    // GUI
     private DrawingSurfacePanel drawingSurface;
+    private DrawnShapesPanel drawnShapes;
+    private GOInfoPanel infoPanel;
+    private JButton removeYours, removeAll, undo;
+    private JButton saveSnapshot, getSnapshot, getCanvas;
 
     public Window(Behavior behavior){
         // Set window behavior
         this.behavior = behavior;
 
-        // create panels
+        // Set title
+        setTitle("Shared Drawing Surface: ClientID[" + behavior.getId() + "]");
+
+        // Initialize GUI buttons
         removeYours = new JButton("Remove Yours");
-        removeYours.addActionListener(e -> behavior.removeYours());
+        removeYours.addActionListener(e -> {
+            if (behavior.isCanvasMode())
+                behavior.removeYours();
+        });
 
         removeAll = new JButton("Remove All");
-        removeAll.addActionListener(e -> behavior.removeAll());
+        removeAll.addActionListener(e -> {
+            if (behavior.isCanvasMode())
+                behavior.removeAll();
+        });
 
         undo = new JButton("Undo");
-        undo.addActionListener(e -> behavior.undo());
+        undo.addActionListener(e -> {
+            if (behavior.isCanvasMode())
+                behavior.undo();
+        });
 
+        saveSnapshot = new JButton("Save Snapshot");
+        saveSnapshot.addActionListener(e -> {
+            if (behavior.isCanvasMode())
+                behavior.saveSnapshot();
+        });
 
+        getSnapshot = new JButton("Show Snapshot");
+        getSnapshot.addActionListener(e -> {
+            if (behavior.isCanvasMode())
+                behavior.loadSnapshot();
+        });
+
+        getCanvas = new JButton("Show Canvas");
+        getCanvas.addActionListener(e -> {
+            if (!behavior.isCanvasMode())
+                behavior.loadCurrentCanvas();
+        });
+
+        // Initialize GUI panels
         infoPanel = new GOInfoPanel();
-        drawnShapes = new DrawnShapesPanel();
-        drawingSurface = new DrawingSurfacePanel();
 
+        drawnShapes = new DrawnShapesPanel();
+
+        drawingSurface = new DrawingSurfacePanel();
         drawingSurface.addMouseListener(new MouseListener() {
             public void mouseClicked(MouseEvent e) {
-                long id = behavior.getId();
-                GraphicalObject newGO = infoPanel.makeGraphicalObject(id, e.getPoint());
-                behavior.addShape(newGO);
+                if (behavior.isCanvasMode()) {
+                    long id = behavior.getId();
+                    GraphicalObject newGO = infoPanel.makeGraphicalObject(id, e.getPoint());
+                    behavior.addShape(newGO);
+                }
             }
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {}
@@ -52,47 +92,69 @@ public class Window extends JFrame {
         // add components
         addPanels();
 
+        // Disconnect on shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread(behavior::disconnect));
+
         // Listen for updates from server
         Thread t = new Thread(() -> behavior.listenForUpdates(this));
         t.start();
     }
 
+    /**
+     * Adds GUI panels to JFrame
+     */
     private void addPanels() {
         // Setup the layout
         Container cp = getContentPane();
         cp.setLayout(new GridBagLayout());
-        ((GridBagLayout)cp.getLayout()).columnWidths = new int[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
-        ((GridBagLayout)cp.getLayout()).rowHeights = new int[] {50, 50, 50, 50, 50, 50, 50, 50, 50};
+
+        int[] width = new int[23];
+        Arrays.fill(width, 25);
+
+        int[] height = new int[17];
+        Arrays.fill(height, 25);
+
+        ((GridBagLayout)cp.getLayout()).columnWidths = width;
+        ((GridBagLayout)cp.getLayout()).rowHeights = height;
 
         GridBagConstraints gc = new GridBagConstraints();
 
         // Add the Drawing Surface
-        gc.gridx = 0; gc.gridy = 0; gc.gridwidth = 7; gc.gridheight = 7; gc.anchor = GridBagConstraints.CENTER;
+        gc.gridx = 0; gc.gridy = 0; gc.gridwidth = 15; gc.gridheight = 15; gc.anchor = GridBagConstraints.CENTER;
         gc.fill = GridBagConstraints.BOTH;
         cp.add(drawingSurface, gc);
 
-        // Add Shape List
-        gc.gridx = 7; gc.gridwidth = 4; gc.gridheight = 5;
+        // Add Drawn Shapes
+        gc.gridx = 15; gc.gridwidth = 8; gc.gridheight = 10;
         cp.add(drawnShapes, gc);
 
-        // Add Shape Builder
-        gc.gridy = 5; gc.gridheight = 3;
+        // Add Info Panel
+        gc.gridy = 10; gc.gridheight = 7;
         cp.add(infoPanel, gc);
 
         // Add Buttons
-        gc.gridx = 0; gc.gridy = 7; gc.gridwidth = 2; gc.gridheight = 1;
+        gc.gridx = 0; gc.gridy = 15; gc.gridwidth = 5; gc.gridheight = 1;
         cp.add(removeYours, gc);
-        gc.gridx = 2;
-        cp.add(removeAll, gc);
         gc.gridx = 5;
+        cp.add(removeAll, gc);
+        gc.gridx = 10;
         cp.add(undo, gc);
+        gc.gridx = 0; gc.gridy = 16;
+        cp.add(saveSnapshot, gc);
+        gc.gridx = 5;
+        cp.add(getSnapshot, gc);
+        gc.gridx = 10;
+        cp.add(getCanvas, gc);
 
         // Fix JFrame size
-        setSize(570, 400);
-        //pack();
+        setSize(590, 466);
+
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Repaints the drawing surface and updates Drawn Shapes List
+     */
     public void tellToRepaint() {
         ArrayList<GraphicalObject> list = behavior.getGraphicalObjects();
         drawnShapes.update(list);

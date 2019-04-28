@@ -7,8 +7,13 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * The Drawing Surface is where the shapes are displayed, as well
+ * as the space that the user clicks on to add a shape in that spot.
+ */
 public class DrawingSurfacePanel extends JPanel {
 
+    // List of shapes to draw
     private ArrayList<GraphicalObject> shapesToDraw;
 
     DrawingSurfacePanel() {
@@ -16,49 +21,69 @@ public class DrawingSurfacePanel extends JPanel {
         shapesToDraw = new ArrayList<>();
     }
 
+    /**
+     * Updates the list of shapes to draw, since no additional params
+     * can be added in java.swing paint(Graphics g) method below.
+     * @param list List of shapes to draw
+     */
     void setShapesToDraw(ArrayList<GraphicalObject> list) {
         shapesToDraw = list;
     }
 
     @Override
     public void paint(Graphics g) {
+        // Clear canvas
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, getWidth(), getHeight());
+
+        // Go through list of shapes to draw
         if (!shapesToDraw.isEmpty()){
             for (GraphicalObject go : shapesToDraw) {
+                // Draw shape
                 g.setColor(go.getColor());
                 switch (go.getType()) {
                     case Circle:
-                        g.fillOval(go.getPoint().x, go.getPoint().y, go.getWidth(), go.getHeight());
+                        int x = go.getPoint().x - (go.getWidth() / 2);
+                        int y = go.getPoint().y - (go.getHeight() / 2);
+                        g.fillOval(x, y, go.getWidth(), go.getHeight());
                         break;
                     case Triangle:
                         fillTriangle(g, go);
                         break;
                     case Rectangle:
-                        g.fillRect(go.getPoint().x, go.getPoint().y, go.getWidth(), go.getHeight());
+                        x = go.getPoint().x - (go.getWidth() / 2);
+                        y = go.getPoint().y - (go.getHeight() / 2);
+                        g.fillRect(x, y, go.getWidth(), go.getHeight());
                     default:
-                        g.fillOval(go.getPoint().x, go.getPoint().y, go.getWidth(), go.getHeight());
+                        x = go.getPoint().x - (go.getWidth() / 2);
+                        y = go.getPoint().y - (go.getHeight() / 2);
+                        g.fillOval(x, y, go.getWidth(), go.getHeight());
                 }
             }
         }
     }
 
+    /**
+     * Helper method for paint, draws a triangle.
+     * @param g paint brush
+     * @param go triangle to be drawn
+     */
     private void fillTriangle(Graphics g, GraphicalObject go) {
         int[] xPoints = new int[3];
         int[] yPoints = new int[3];
         Point p = go.getPoint();
 
         // Top point
-        xPoints[0] = go.getWidth() / 2 + p.x;
-        yPoints[0] = p.y;
+        xPoints[0] = p.x;
+        yPoints[0] = p.y - (go.getHeight() / 2);
 
         // Bottom left point
-        xPoints[1] = p.x;
-        yPoints[1] = go.getHeight() + p.y;
+        xPoints[1] = p.x - (go.getWidth() / 2);
+        yPoints[1] = p.y + (go.getHeight() / 2);
 
         // Bottom right point
-        xPoints[2] = go.getWidth() + p.x;
-        yPoints[2] = go.getHeight() + p.y;
+        xPoints[2] = p.x + (go.getWidth() / 2);
+        yPoints[2] = p.y + (go.getHeight() / 2);
 
         g.fillPolygon(xPoints, yPoints, 3);
     }

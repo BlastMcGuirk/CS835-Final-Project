@@ -21,7 +21,7 @@ import static server.ServerLauncher.SOCKET_PORT;
 public class ClientLauncher {
 
     public static void main(String[] args) {
-        // args[1]:
+        // args[0]:
         //		1 = RMI
         //		2 = Socket
         Behavior behavior;
@@ -33,8 +33,7 @@ public class ClientLauncher {
             // Get canvas from RMI
             Canvas c = null;
             try {
-                // TODO: Determine who the host is
-                c = (Canvas) java.rmi.Naming.lookup("rmi://" + "host" + ":" + RMI_PORT + "/Canvas");
+                c = (Canvas) java.rmi.Naming.lookup("rmi://" + "0.0.0.0" + ":" + RMI_PORT + "/Canvas");
             } catch (NotBoundException | MalformedURLException | RemoteException e) {
                 e.printStackTrace();
             }
@@ -69,7 +68,7 @@ public class ClientLauncher {
             behavior = new SocketBehavior(socket, in, out);
             System.out.println("Connected to Socket service.");
         } else {
-            throw new IllegalArgumentException("Args[1] must be 1 for RMI or 2 for Socket");
+            throw new IllegalArgumentException("Args[0] must be 1 for RMI or 2 for Socket");
         }
 
         JFrame clientWindow = new Window(behavior);

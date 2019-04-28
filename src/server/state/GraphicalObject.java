@@ -3,6 +3,11 @@ package server.state;
 import java.awt.*;
 import java.io.Serializable;
 
+/**
+ * Holds the information on a shape added to the Canvas.
+ * It is Serializable because the client sends these shapes
+ * to the server using RMI, and vice versa.
+ */
 public class GraphicalObject implements Serializable {
 
     // ID of client origin
@@ -23,6 +28,15 @@ public class GraphicalObject implements Serializable {
     // Location on canvas
     private final Point p;
 
+    /**
+     * Constructor specifying each attribute
+     * @param ID ID of client that created the shape
+     * @param type What shape it is
+     * @param color The color of the shape
+     * @param width The width of the shape
+     * @param height The height of the shape
+     * @param p Where the shape is located
+     */
     public GraphicalObject(long ID, ShapeType type, Color color, int width, int height, Point p) {
         this.ID = ID;
         this.type = type;
@@ -32,6 +46,12 @@ public class GraphicalObject implements Serializable {
         this.p = p;
     }
 
+    /**
+     * Constructor using a String (For socket connection and snapshots)
+     * @param ID ID of client that created the shape
+     * @param value attributes of shape in order of:
+     *              type, color, width, height, x, y
+     */
     public GraphicalObject(long ID, String value) {
         this.ID = ID;
         String[] parts = value.split(" ");
@@ -74,6 +94,16 @@ public class GraphicalObject implements Serializable {
         p = new Point(Integer.parseInt(parts[4]), Integer.parseInt(parts[5]));
     }
 
+    /**
+     * Clones the object
+     * @return clone of the GraphicalObject
+     */
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @Override
+    public GraphicalObject clone() {
+        return new GraphicalObject(getID(), getType(), getColor(), getWidth(), getHeight(), getPoint());
+    }
+
     public long getID() {
         return ID;
     }
@@ -94,6 +124,9 @@ public class GraphicalObject implements Serializable {
         return color;
     }
 
+    /**
+     * @return The name of the color, used for readability
+     */
     private String getColorName() {
         if (color == Color.BLACK) return "Black";
         if (color == Color.RED) return "Red";
@@ -106,6 +139,16 @@ public class GraphicalObject implements Serializable {
         return p;
     }
 
+    /**
+     * @return The string displayed in DrawnShapesPanel
+     */
+    public String displayString() {
+        return getColorName() + " " + type.toString() + ": [" + width + "x" + height + "] (" + p.x + ", " + p.y + ")";
+    }
+
+    /**
+     * @return The standard format for GraphicalObject String constructor
+     */
     @Override
     public String toString() {
         return type.toString() + " " + getColorName() + " " + width + " " + height + " " + p.x + " " + p.y;

@@ -6,9 +6,15 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.util.ArrayList;
 
+/**
+ * The Drawn Shapes panel displays the info of the shapes being
+ * displayed on the screen. This could either be the current state
+ * of the canvas, or the snapshot. It shows the shape, color, width,
+ * height, and location of each GraphicalObject being displayed.
+ */
 class DrawnShapesPanel extends JScrollPane {
 
-    private JList<GraphicalObject> goJList;
+    private JList<String> goJList;
 
     DrawnShapesPanel() {
         goJList = new JList<>();
@@ -16,11 +22,15 @@ class DrawnShapesPanel extends JScrollPane {
         setViewportView(goJList);
     }
 
+    /**
+     * Updates the displayed list with a list of GraphicalObjects
+     * @param goList list of objects to show their information
+     */
     void update(ArrayList<GraphicalObject> goList) {
-        // Change if shapes are changed on server
-        DefaultListModel<GraphicalObject> dlm = new DefaultListModel<>();
+        // update if changes are made on server
+        DefaultListModel<String> dlm = new DefaultListModel<>();
         for (GraphicalObject go : goList) {
-            dlm.addElement(go);
+            dlm.addElement(go.displayString());
         }
         goJList.setModel(dlm);
     }

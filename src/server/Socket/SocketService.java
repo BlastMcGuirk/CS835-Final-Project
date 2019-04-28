@@ -7,9 +7,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executors;
 
+/**
+ * Starts the socket service.
+ */
 public class SocketService {
 
-    // Give operations based on commands received
+    /**
+     * Waits for a new connection, makes a Drawer and starts running it
+     * @param listener The server waiting for connections
+     * @param c The shared Canvas object
+     * @throws IOException on socket error
+     */
     public static void start(ServerSocket listener, Canvas c) throws IOException {
         var pool = Executors.newFixedThreadPool(200);
         //noinspection InfiniteLoopStatement
