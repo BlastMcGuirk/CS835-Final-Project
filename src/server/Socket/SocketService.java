@@ -6,7 +6,9 @@ import server.state.CanvasInterface;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Starts the socket service.
@@ -19,14 +21,13 @@ public class SocketService {
      * @param c The shared Canvas object
      * @throws IOException on socket error
      */
-    public static void start(ServerSocket listener, CanvasInterface c) throws IOException {
-        var pool = Executors.newFixedThreadPool(200);
+    public static void start(ThreadPoolExecutor threadPool, ServerSocket listener, CanvasInterface c) throws IOException {
         //noinspection InfiniteLoopStatement
         while (true) {
             // new connection
             Socket socket = listener.accept();
             Drawer drawer = c.newSocketConnection(socket);
-            pool.submit(drawer);
+            threadPool.submit(drawer);
         }
     }
 

@@ -94,7 +94,6 @@ public class Canvas implements CanvasInterface {
      */
     @Override
     public synchronized void addShape(GraphicalObject go) {
-        System.out.println("ADDINGGGGG: " + go);
         shapeList.add(go);
         tellAllDrawers("ADDED " + go.getID() + ":" + go.toString());
         versionNumber.incrementAndGet();

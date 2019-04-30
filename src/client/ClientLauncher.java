@@ -21,8 +21,13 @@ import static server.ServerLauncher.SOCKET_PORT;
 
 public class ClientLauncher {
 
-    public ClientLauncher(int code) {
+    public static void main(String[] args) {
+        // args[0]:
+        //		1 = RMI
+        //		2 = Socket
         Behavior behavior;
+
+        int code = Integer.parseInt(args[0]);
 
         // RMI Client
         if (code == 1) {
@@ -71,19 +76,6 @@ public class ClientLauncher {
         clientWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         clientWindow.setResizable(false);
         clientWindow.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        // args[0]:
-        //		1 = RMI
-        //		2 = Socket
-        Scanner s = new Scanner(System.in);
-        try {
-            while (true) {
-                String line = s.nextLine();
-                new ClientLauncher(Integer.parseInt(line));
-            }
-        } catch (Exception ignored) {}
     }
 
 }

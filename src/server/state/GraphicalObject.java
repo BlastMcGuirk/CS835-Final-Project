@@ -128,10 +128,10 @@ public class GraphicalObject implements Serializable {
      * @return The name of the color, used for readability
      */
     private String getColorName() {
-        if (color == Color.BLACK) return "Black";
-        if (color == Color.RED) return "Red";
-        if (color == Color.GREEN) return "Green";
-        if (color == Color.BLUE) return "Blue";
+        if (color.equals(new Color(0, 0, 0))) return "Black";
+        if (color.equals(new Color(255, 0, 0))) return "Red";
+        if (color.equals(new Color(0, 255, 0))) return "Green";
+        if (color.equals(new Color(0, 0, 255))) return "Blue";
         return "BLACK";
     }
 

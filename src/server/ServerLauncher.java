@@ -2,12 +2,15 @@ package server;
 
 import server.RMI.RMIService;
 import server.Socket.SocketService;
+import server.simulation.GhostClient;
 import server.state.Canvas;
 import server.state.CanvasInterface;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.rmi.RemoteException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class ServerLauncher {
 
@@ -19,7 +22,13 @@ public class ServerLauncher {
         //		1 = RMI
         //		2 = Socket
         //		3 = Both
+        // args[1]:
+        //      # of ghost clients to start
+        // args[2]:
+        //      % activity from ghost clients
+
         CanvasInterface canvas = new Canvas();
+        ThreadPoolExecutor threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(200);
 
         int code = Integer.parseInt(args[0]);
         if (code == 1 || code == 3) {
@@ -45,12 +54,20 @@ public class ServerLauncher {
                     System.out.println("Socket service running:");
                     System.out.println("    Host: " + listener.getInetAddress().getHostName());
                     System.out.println("    Port: " + SOCKET_PORT);
-                    SocketService.start(listener, canvas);
+                    SocketService.start(threadPool, listener, canvas);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
             SocketThread.start();
+        }
+
+        // Launch Ghost Clients
+        int numGhostClients = Integer.parseInt(args[1]);
+        int activityPercentage = Integer.parseInt(args[2]);
+        for (int i = 0; i < numGhostClients; i++) {
+            GhostClient gc = new GhostClient(canvas, activityPercentage);
+            threadPool.submit(gc);
         }
     }
 
