@@ -1,9 +1,10 @@
 package client.behaviors;
 
 import client.GUI.Window;
-import server.state.Canvas;
+import server.state.CanvasInterface;
 import server.state.GraphicalObject;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 public class RMIBehavior implements Behavior {
 
     // RMI Canvas object
-    private Canvas canvas;
+    private CanvasInterface canvas;
 
     // ID of the client
     private long userID;
@@ -21,49 +22,79 @@ public class RMIBehavior implements Behavior {
     // Whether or not the user is looking at the canvas (vs a snapshot)
     private boolean displayCanvas;
 
+    // If the window should refresh the image (e.g., on snapshot load)
+    private boolean refreshImage;
+
     // Current version of canvas, used for repainting on update
     private long currentVersion;
 
-    public RMIBehavior(Canvas c) {
+    public RMIBehavior(CanvasInterface c) {
         canvas = c;
-        userID = c.registerNewUser();
+        try {
+            userID = c.registerNewUser();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         displayCanvas = true;
+        refreshImage = false;
         currentVersion = 0;
     }
 
     @Override
     public void addShape(GraphicalObject go) {
-        canvas.addShape(go);
+        try {
+            canvas.addShape(go);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void removeYours() {
-        canvas.removeAll(userID);
+        try {
+            canvas.removeAll(userID);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void removeAll() {
-        canvas.removeAll();
+        try {
+            canvas.removeAll();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void undo() {
-        canvas.undo(userID);
+        try {
+            canvas.undo(userID);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void saveSnapshot() {
-        canvas.saveSnapshot(userID);
+        try {
+            canvas.saveSnapshot(userID);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void loadSnapshot() {
         displayCanvas = false;
+        refreshImage = true;
     }
 
     @Override
     public void loadCurrentCanvas() {
         displayCanvas = true;
+        refreshImage = true;
     }
 
     @Override
@@ -78,7 +109,13 @@ public class RMIBehavior implements Behavior {
 
     @Override
     public ArrayList<GraphicalObject> getGraphicalObjects() {
-        return displayCanvas ? canvas.getShapeList() : canvas.getSnapshot(userID);
+        try {
+            return displayCanvas ? canvas.getShapeList() : canvas.getSnapshot(userID);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        System.err.println("Cannot get shapes");
+        return new ArrayList<>();
     }
 
     /**
@@ -99,9 +136,16 @@ public class RMIBehavior implements Behavior {
     public void listenForUpdates(Window w) {
         //noinspection InfiniteLoopStatement
         while (true) {
-            if (displayCanvas && currentVersion != canvas.getVersionNumber()) {
-                currentVersion = canvas.getVersionNumber();
-                w.tellToRepaint();
+            try {
+                if (refreshImage) {
+                    refreshImage = false;
+                    w.tellToRepaint();
+                } else if (displayCanvas && currentVersion != canvas.getVersionNumber()) {
+                    currentVersion = canvas.getVersionNumber();
+                    w.tellToRepaint();
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
         }
     }

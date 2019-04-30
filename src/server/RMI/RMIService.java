@@ -1,6 +1,7 @@
 package server.RMI;
 
 import server.state.Canvas;
+import server.state.CanvasInterface;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -20,26 +21,22 @@ public class RMIService {
      * @param port port number to run RMI
      * @param canvas Canvas object being exported
      */
-    public static void start(int port, Canvas canvas) throws RemoteException {
+    public static void start(int port, CanvasInterface canvas) throws RemoteException {
         if (registry != null) {
             // Registry is running, throw exception
             throw new IllegalStateException("RMI registry already running");
         }
-        registry = java.rmi.registry.LocateRegistry.getRegistry(port);
+        registry = java.rmi.registry.LocateRegistry.createRegistry(port);
         registry.list();
         UnicastRemoteObject.exportObject(canvas, 0);
-        try {
-            registry.bind(BINDING_NAME, canvas);
-        } catch (AlreadyBoundException e) {
-            e.printStackTrace();
-        }
+        registry.rebind(BINDING_NAME, canvas);
     }
 
     /**
      * Stops the RMI service
      * @param canvas Canvas object to un-export
      */
-    public static void stop(Canvas canvas) {
+    public static void stop(CanvasInterface canvas) {
         if (registry == null) {
             // No registry running, throw exception
             throw new IllegalStateException("Server not running");

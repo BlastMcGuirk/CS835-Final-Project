@@ -3,6 +3,7 @@ package server;
 import server.RMI.RMIService;
 import server.Socket.SocketService;
 import server.state.Canvas;
+import server.state.CanvasInterface;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,7 +19,7 @@ public class ServerLauncher {
         //		1 = RMI
         //		2 = Socket
         //		3 = Both
-        Canvas canvas = new Canvas();
+        CanvasInterface canvas = new Canvas();
 
         int code = Integer.parseInt(args[0]);
         if (code == 1 || code == 3) {

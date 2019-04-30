@@ -5,6 +5,7 @@ import client.behaviors.Behavior;
 import client.behaviors.RMIBehavior;
 import client.behaviors.SocketBehavior;
 import server.state.Canvas;
+import server.state.CanvasInterface;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -20,20 +21,15 @@ import static server.ServerLauncher.SOCKET_PORT;
 
 public class ClientLauncher {
 
-    public static void main(String[] args) {
-        // args[0]:
-        //		1 = RMI
-        //		2 = Socket
+    public ClientLauncher(int code) {
         Behavior behavior;
-
-        int code = Integer.parseInt(args[0]);
 
         // RMI Client
         if (code == 1) {
             // Get canvas from RMI
-            Canvas c = null;
+            CanvasInterface c = null;
             try {
-                c = (Canvas) java.rmi.Naming.lookup("rmi://" + "0.0.0.0" + ":" + RMI_PORT + "/Canvas");
+                c = (CanvasInterface) java.rmi.Naming.lookup("rmi://" + "0.0.0.0" + ":" + RMI_PORT + "/Canvas");
             } catch (NotBoundException | MalformedURLException | RemoteException e) {
                 e.printStackTrace();
             }
@@ -75,6 +71,19 @@ public class ClientLauncher {
         clientWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         clientWindow.setResizable(false);
         clientWindow.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        // args[0]:
+        //		1 = RMI
+        //		2 = Socket
+        Scanner s = new Scanner(System.in);
+        try {
+            while (true) {
+                String line = s.nextLine();
+                new ClientLauncher(Integer.parseInt(line));
+            }
+        } catch (Exception ignored) {}
     }
 
 }

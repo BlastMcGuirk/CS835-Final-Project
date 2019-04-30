@@ -80,6 +80,7 @@ public class Window extends JFrame {
                 if (behavior.isCanvasMode()) {
                     long id = behavior.getId();
                     GraphicalObject newGO = infoPanel.makeGraphicalObject(id, e.getPoint());
+                    System.out.println("Adding shape: " + newGO);
                     behavior.addShape(newGO);
                 }
             }

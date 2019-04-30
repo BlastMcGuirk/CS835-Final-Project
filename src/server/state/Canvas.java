@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * keeps track of it's version, holds socket connections, and
  * can make calls to the Snapshot Manager.
  */
-public class Canvas implements Remote {
+public class Canvas implements CanvasInterface {
 
     // AtomicLong to generate new user ID atomically
     private volatile AtomicLong userIdGenerator;
@@ -51,6 +51,7 @@ public class Canvas implements Remote {
      * Generates a new unique user ID for client
      * @return new user ID
      */
+    @Override
     public long registerNewUser() {
         return userIdGenerator.incrementAndGet();
     }
@@ -58,6 +59,7 @@ public class Canvas implements Remote {
     /**
      * @return version number of the canvas
      */
+    @Override
     public long getVersionNumber() {
         return versionNumber.get();
     }
@@ -67,6 +69,7 @@ public class Canvas implements Remote {
      * @param socket socket connection
      * @return a Drawer for the socket
      */
+    @Override
     public Drawer newSocketConnection(Socket socket) {
         long idValue = registerNewUser();
         Drawer newDrawer = new Drawer(socket, idValue, this);
@@ -79,6 +82,7 @@ public class Canvas implements Remote {
      * Removes a Drawer from the list of socket connections
      * @param drawer drawer to remove from list
      */
+    @Override
     public void removeSocketConnection(Drawer drawer) {
         System.out.println("Disconnecting socket: " + drawer);
         socketConnections.remove(drawer);
@@ -88,7 +92,9 @@ public class Canvas implements Remote {
      * Adds a shape to the shape list
      * @param go The shape being added
      */
+    @Override
     public synchronized void addShape(GraphicalObject go) {
+        System.out.println("ADDINGGGGG: " + go);
         shapeList.add(go);
         tellAllDrawers("ADDED " + go.getID() + ":" + go.toString());
         versionNumber.incrementAndGet();
@@ -97,6 +103,7 @@ public class Canvas implements Remote {
     /**
      * Removes all shapes from the shape list
      */
+    @Override
     public synchronized void removeAll() {
         shapeList.clear();
         tellAllDrawers("REMOVED_ALL");
@@ -107,6 +114,7 @@ public class Canvas implements Remote {
      * Removes all shapes with ID from the shape list
      * @param ID ID of shapes to be removed
      */
+    @Override
     public synchronized void removeAll(long ID) {
         shapeList.removeIf(go -> go.getID() == ID);
         tellAllDrawers("REMOVED_FROM " + ID);
@@ -117,6 +125,7 @@ public class Canvas implements Remote {
      * Removes the last shape with ID from the shape list (if one exists)
      * @param ID ID of the shape to be removed
      */
+    @Override
     public synchronized void undo(long ID) {
         for (int i = shapeList.size() - 1; i >= 0; i--) {
             if (shapeList.get(i).getID() == ID) {
@@ -131,6 +140,7 @@ public class Canvas implements Remote {
     /**
      * @return The list of shapes drawn by all clients
      */
+    @Override
     public synchronized ArrayList<GraphicalObject> getShapeList() {
         return shapeList;
     }
@@ -139,6 +149,7 @@ public class Canvas implements Remote {
      * Calls the SnapshotSaver saveSnapshot method
      * @param ID ID of user saving the snapshot
      */
+    @Override
     public synchronized void saveSnapshot(long ID) {
         snapshotSaver.saveSnapshot(ID, shapeList);
     }
@@ -148,6 +159,7 @@ public class Canvas implements Remote {
      * @param ID ID of user retrieving the snapshot
      * @return The list of shapes in the snapshot
      */
+    @Override
     public ArrayList<GraphicalObject> getSnapshot(long ID) {
         return snapshotSaver.retrieveSnapshot(ID);
     }

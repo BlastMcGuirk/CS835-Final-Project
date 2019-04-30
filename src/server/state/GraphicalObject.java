@@ -14,7 +14,7 @@ public class GraphicalObject implements Serializable {
     private final long ID;
 
     // Type of shape to be drawn
-    public enum ShapeType{Circle { public String toString() { return "Circle"; } },
+    public enum ShapeType implements Serializable {Circle { public String toString() { return "Circle"; } },
                         Triangle { public String toString() { return "Triangle"; } },
                         Rectangle { public String toString() { return "Rectangle"; } } }
     private final ShapeType type;

@@ -1,6 +1,7 @@
 package server.Socket;
 
 import server.state.Canvas;
+import server.state.CanvasInterface;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,7 +19,7 @@ public class SocketService {
      * @param c The shared Canvas object
      * @throws IOException on socket error
      */
-    public static void start(ServerSocket listener, Canvas c) throws IOException {
+    public static void start(ServerSocket listener, CanvasInterface c) throws IOException {
         var pool = Executors.newFixedThreadPool(200);
         //noinspection InfiniteLoopStatement
         while (true) {
