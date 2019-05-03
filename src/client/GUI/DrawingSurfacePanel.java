@@ -59,6 +59,10 @@ public class DrawingSurfacePanel extends JPanel {
                         y = go.getPoint().y - (go.getHeight() / 2);
                         g.fillOval(x, y, go.getWidth(), go.getHeight());
                 }
+                if (go.isMarked()) {
+                    g.setColor(Color.BLACK);
+                    g.drawString("[" + go.getID() + "]", go.getPoint().x + (go.getWidth() / 2), go.getPoint().y);
+                }
             }
         }
     }

@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * SocketBehavior interacts with the server using a socket connection. It
@@ -40,6 +42,7 @@ public class SocketBehavior implements Behavior{
 
     // List of shapes being drawn (can be canvas or snapshot)
     private ArrayList<GraphicalObject> goList;
+    private Timer markerTimer;
 
     // ID of the client
     private long userID;
@@ -53,6 +56,7 @@ public class SocketBehavior implements Behavior{
         this.out = out;
 
         goList = new ArrayList<>();
+        markerTimer = new Timer();
 
         displayCanvas = true;
 
@@ -165,7 +169,22 @@ public class SocketBehavior implements Behavior{
                     if (response.startsWith("ADDED")) {
                         String[] responseValues = response.substring(6).split(":");
                         long idValue = Long.parseLong(responseValues[0]);
-                        goList.add(new GraphicalObject(idValue, responseValues[1]));
+                        GraphicalObject go = new GraphicalObject(idValue, responseValues[1]);
+                        go.setMarked(true);
+                        for (int i = goList.size() - 1; i >= 0; i--) {
+                            GraphicalObject removeMarkerGO = goList.get(i);
+                            if (removeMarkerGO.getID() == go.getID()) {
+                                removeMarkerGO.setMarked(false);
+                            }
+                        }
+                        markerTimer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                go.setMarked(false);
+                                w.tellToRepaint();
+                            }
+                        }, 3000);
+                        goList.add(go);
                     }
                     // All shapes with specified ID were removed from canvas
                     else if (response.startsWith("REMOVED_FROM")) {

@@ -4,7 +4,6 @@ import client.GUI.Window;
 import client.behaviors.Behavior;
 import client.behaviors.RMIBehavior;
 import client.behaviors.SocketBehavior;
-import server.state.Canvas;
 import server.state.CanvasInterface;
 
 import javax.swing.*;

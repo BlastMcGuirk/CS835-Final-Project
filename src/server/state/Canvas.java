@@ -3,9 +3,9 @@ package server.state;
 import server.Socket.Drawer;
 
 import java.net.Socket;
-import java.rmi.Remote;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -25,6 +25,9 @@ public class Canvas implements CanvasInterface {
     // List of all shapes on server
     private ArrayList<GraphicalObject> shapeList;
 
+    // List of markers for last shape placed by client
+    private Timer markerTimer;
+
     // List of all in-use socket connections
     private ArrayList<Drawer> socketConnections;
 
@@ -37,6 +40,8 @@ public class Canvas implements CanvasInterface {
 
         shapeList = new ArrayList<>();
         socketConnections = new ArrayList<>();
+
+        markerTimer = new Timer();
 
         // Load snapshots
         snapshotSaver = new SnapshotSaver();
@@ -94,7 +99,21 @@ public class Canvas implements CanvasInterface {
      */
     @Override
     public synchronized void addShape(GraphicalObject go) {
+        for (int i = shapeList.size() - 1; i >= 0; i--) {
+            GraphicalObject removeMarkerGO = shapeList.get(i);
+            if (removeMarkerGO.getID() == go.getID()) {
+                removeMarkerGO.setMarked(false);
+            }
+        }
         shapeList.add(go);
+        go.setMarked(true);
+        markerTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                go.run();
+                versionNumber.incrementAndGet();
+            }
+        }, 3000);
         tellAllDrawers("ADDED " + go.getID() + ":" + go.toString());
         versionNumber.incrementAndGet();
     }

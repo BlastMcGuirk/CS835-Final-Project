@@ -26,3 +26,15 @@ ID 2
 2:Rectangle Green 100 10 107 36
 2:Rectangle Green 100 10 185 34
 2:Rectangle Green 100 10 256 32
+ID 4
+2:Triangle Green 99 72 85 172
+4:Circle Red 43 58 246 232
+2:Triangle Red 12 68 0 97
+1:Rectangle Black 76 83 143 260
+3:Circle Green 24 87 344 218
+4:Rectangle Red 43 58 109 49
+1:Triangle Black 75 60 286 3
+2:Triangle Blue 41 62 123 220
+4:Rectangle Red 43 58 344 329
+3:Triangle Blue 91 15 301 195
+2:Circle Red 33 95 194 4

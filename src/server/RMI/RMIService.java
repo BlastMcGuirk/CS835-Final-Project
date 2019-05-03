@@ -1,9 +1,7 @@
 package server.RMI;
 
-import server.state.Canvas;
 import server.state.CanvasInterface;
 
-import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;

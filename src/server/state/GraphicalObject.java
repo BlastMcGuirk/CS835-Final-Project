@@ -2,13 +2,14 @@ package server.state;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.util.TimerTask;
 
 /**
  * Holds the information on a shape added to the Canvas.
  * It is Serializable because the client sends these shapes
  * to the server using RMI, and vice versa.
  */
-public class GraphicalObject implements Serializable {
+public class GraphicalObject extends TimerTask implements Serializable {
 
     // ID of client origin
     private final long ID;
@@ -28,6 +29,9 @@ public class GraphicalObject implements Serializable {
     // Location on canvas
     private final Point p;
 
+    // Whether or not the GO is marked with client ID
+    private boolean marked;
+
     /**
      * Constructor specifying each attribute
      * @param ID ID of client that created the shape
@@ -44,6 +48,7 @@ public class GraphicalObject implements Serializable {
         this.width = width;
         this.height = height;
         this.p = p;
+        this.marked = false;
     }
 
     /**
@@ -137,6 +142,19 @@ public class GraphicalObject implements Serializable {
 
     public Point getPoint() {
         return p;
+    }
+
+    public void setMarked(boolean mark) {
+        this.marked = mark;
+    }
+
+    public boolean isMarked() {
+        return marked;
+    }
+
+    @Override
+    public void run() {
+        marked = false;
     }
 
     /**

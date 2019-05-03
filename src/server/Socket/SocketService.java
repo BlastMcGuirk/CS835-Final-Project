@@ -1,13 +1,10 @@
 package server.Socket;
 
-import server.state.Canvas;
 import server.state.CanvasInterface;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
