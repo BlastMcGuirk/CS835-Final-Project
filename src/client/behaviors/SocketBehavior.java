@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * SocketBehavior interacts with the server using a socket connection. It
@@ -32,6 +33,8 @@ import java.util.TimerTask;
  *          GETTING_SNAPSHOT <# GOs>
  *          GETTING_CANVAS <# GOs>
  *          SH <ID>:<GO>
+ *          MARK <SHAPE_ID> <CLIENT_ID>
+ *          UNMARK <SHAPE_ID> <CLIENT_ID>
  */
 public class SocketBehavior implements Behavior{
 
@@ -41,8 +44,7 @@ public class SocketBehavior implements Behavior{
     private PrintWriter out;
 
     // List of shapes being drawn (can be canvas or snapshot)
-    private ArrayList<GraphicalObject> goList;
-    private Timer markerTimer;
+    private ConcurrentHashMap<Long, GraphicalObject> goList;
 
     // ID of the client
     private long userID;
@@ -55,8 +57,7 @@ public class SocketBehavior implements Behavior{
         this.in = in;
         this.out = out;
 
-        goList = new ArrayList<>();
-        markerTimer = new Timer();
+        goList = new ConcurrentHashMap<>();
 
         displayCanvas = true;
 
@@ -116,7 +117,7 @@ public class SocketBehavior implements Behavior{
      * @return The current list of shapes to be drawn
      */
     @Override
-    public ArrayList<GraphicalObject> getGraphicalObjects() {
+    public ConcurrentHashMap<Long, GraphicalObject> getGraphicalObjects() {
         return goList;
     }
 
@@ -154,8 +155,9 @@ public class SocketBehavior implements Behavior{
                     for (int i = 0; i < numToGet && in.hasNextLine(); i++) {
                         String newShape = in.nextLine();
                         String[] shapeValues = newShape.substring(3).split(":");
-                        long idValue = Long.parseLong(shapeValues[0]);
-                        goList.add(new GraphicalObject(idValue, shapeValues[1]));
+                        long shapeID = Long.parseLong(shapeValues[0]);
+                        long clientID = Long.parseLong(shapeValues[1]);
+                        goList.put(shapeID, new GraphicalObject(clientID, shapeValues[1]));
                     }
                     // Repaint the canvas
                     w.tellToRepaint();
@@ -168,28 +170,15 @@ public class SocketBehavior implements Behavior{
                     // New shape was added to canvas
                     if (response.startsWith("ADDED")) {
                         String[] responseValues = response.substring(6).split(":");
-                        long idValue = Long.parseLong(responseValues[0]);
-                        GraphicalObject go = new GraphicalObject(idValue, responseValues[1]);
-                        go.setMarked(true);
-                        for (int i = goList.size() - 1; i >= 0; i--) {
-                            GraphicalObject removeMarkerGO = goList.get(i);
-                            if (removeMarkerGO.getID() == go.getID()) {
-                                removeMarkerGO.setMarked(false);
-                            }
-                        }
-                        markerTimer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                go.setMarked(false);
-                                w.tellToRepaint();
-                            }
-                        }, 3000);
-                        goList.add(go);
+                        long shapeID = Long.parseLong(responseValues[0]);
+                        long clientID = Long.parseLong(responseValues[1]);
+                        GraphicalObject go = new GraphicalObject(clientID, responseValues[2]);
+                        goList.put(shapeID, go);
                     }
                     // All shapes with specified ID were removed from canvas
                     else if (response.startsWith("REMOVED_FROM")) {
                         long idValue = Long.parseLong(response.substring(13));
-                        goList.removeIf(go -> go.getID() == idValue);
+                        goList.entrySet().removeIf(e -> e.getValue().getClientID() == idValue);
                     }
                     // All shapes were removed from canvas
                     else if (response.startsWith("REMOVED_ALL")) {
@@ -199,10 +188,23 @@ public class SocketBehavior implements Behavior{
                     else if (response.startsWith("UNDID")) {
                         long idValue = Long.parseLong(response.substring(6));
                         for (int i = goList.size() - 1; i >= 0; i--) {
-                            if (goList.get(i).getID() == idValue) {
+                            if (goList.get(i).getClientID() == idValue) {
                                 goList.remove(i);
                                 break;
                             }
+                        }
+                    } else if (response.startsWith("MARK")) {
+                        String[] responseValues = response.substring(5).split(":");
+                        long shapeID = Long.parseLong(responseValues[0]);
+                        long clientID = Long.parseLong(responseValues[1]);
+                        goList.get(shapeID).setMarked(true);
+                    } else if (response.startsWith("UNMARK")) {
+                        String[] responseValues = response.substring(7).split(":");
+                        long shapeID = Long.parseLong(responseValues[0]);
+                        long clientID = Long.parseLong(responseValues[1]);
+                        GraphicalObject markedGo = goList.get(shapeID);
+                        if (markedGo != null) {
+                            markedGo.setMarked(false);
                         }
                     }
                     // Repaint the canvas

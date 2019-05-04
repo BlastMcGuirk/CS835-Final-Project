@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The Drawing Surface is where the shapes are displayed, as well
@@ -14,11 +15,11 @@ import java.util.ArrayList;
 public class DrawingSurfacePanel extends JPanel {
 
     // List of shapes to draw
-    private ArrayList<GraphicalObject> shapesToDraw;
+    private ConcurrentHashMap<Long, GraphicalObject> shapesToDraw;
 
     DrawingSurfacePanel() {
         setBorder(LineBorder.createBlackLineBorder());
-        shapesToDraw = new ArrayList<>();
+        shapesToDraw = new ConcurrentHashMap<>();
     }
 
     /**
@@ -26,7 +27,7 @@ public class DrawingSurfacePanel extends JPanel {
      * can be added in java.swing paint(Graphics g) method below.
      * @param list List of shapes to draw
      */
-    void setShapesToDraw(ArrayList<GraphicalObject> list) {
+    void setShapesToDraw(ConcurrentHashMap<Long, GraphicalObject> list) {
         shapesToDraw = list;
     }
 
@@ -38,8 +39,7 @@ public class DrawingSurfacePanel extends JPanel {
 
         // Go through list of shapes to draw
         if (!shapesToDraw.isEmpty()){
-            for (GraphicalObject go : shapesToDraw) {
-                // Draw shape
+            shapesToDraw.forEach((shapeID, go) -> {
                 g.setColor(go.getColor());
                 switch (go.getType()) {
                     case Circle:
@@ -61,9 +61,9 @@ public class DrawingSurfacePanel extends JPanel {
                 }
                 if (go.isMarked()) {
                     g.setColor(Color.BLACK);
-                    g.drawString("[" + go.getID() + "]", go.getPoint().x + (go.getWidth() / 2), go.getPoint().y);
+                    g.drawString("[" + go.getClientID() + "]", go.getPoint().x + (go.getWidth() / 2), go.getPoint().y);
                 }
-            }
+            });
         }
     }
 

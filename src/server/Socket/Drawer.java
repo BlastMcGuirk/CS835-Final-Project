@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The Drawer class represents 1 Socket connection. It holds
@@ -94,18 +95,14 @@ public class Drawer implements Runnable {
                     canvas.saveSnapshot(ID);
                 } else if (command.startsWith("LOAD_SNAPSHOT")) {
                     // Loads the client's snapshot
-                    ArrayList<GraphicalObject> snapshotList = canvas.getSnapshot(ID);
+                    ConcurrentHashMap<Long, GraphicalObject> snapshotList = canvas.getSnapshot(ID);
                     output.println("GETTING_SNAPSHOT " + snapshotList.size());
-                    for (GraphicalObject go : snapshotList) {
-                        output.println("SH " + go.getID() + ":" + go);
-                    }
+                    snapshotList.forEach((shapeID, go) -> output.println("SH " + shapeID + ":" + go.getClientID() + ":" + go));
                 } else if (command.startsWith("LOAD_CANVAS")) {
                     // Loads the current state of the canvas
-                    ArrayList<GraphicalObject> canvasList = canvas.getShapeList();
+                    ConcurrentHashMap<Long, GraphicalObject> canvasList = canvas.getShapeList();
                     output.println("GETTING_CANVAS " + canvasList.size());
-                    for (GraphicalObject go : canvas.getShapeList()) {
-                        output.println("SH " + go.getID() + ":" + go);
-                    }
+                    canvasList.forEach((shapeID, go) -> output.println("SH " + shapeID + ":" + go.getClientID() + ":" + go));
                 }
             }
         }
@@ -121,9 +118,8 @@ public class Drawer implements Runnable {
         output = new PrintWriter(socket.getOutputStream(), true);
 
         output.println("WELCOME " + ID);
-        for (GraphicalObject go : canvas.getShapeList()) {
-            output.println("ADDED " + go.getID() + ":" + go);
-        }
+        canvas.getShapeList().forEach((shapeID, go) ->
+                output.println("ADDED " + shapeID + ":" + go.getClientID() + ":" + go));
     }
 
     @Override

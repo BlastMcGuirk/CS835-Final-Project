@@ -28,7 +28,7 @@ class SnapshotSaver {
     private static final String PATH_TO_SNAPSHOTS = "src/server/state/snapshots.txt";
 
     // Map of snapshots (mapped ID to List Of GraphicalObjects)
-    private ConcurrentHashMap<Long, ArrayList<GraphicalObject>> map;
+    private ConcurrentHashMap<Long, ConcurrentHashMap<Long, GraphicalObject>> map;
 
     SnapshotSaver() {
         map = loadSnapshotsFromFile();
@@ -41,11 +41,9 @@ class SnapshotSaver {
      * @param ID ID of client saving snapshot
      * @param list List of GraphicalObjects at time of snapshot
      */
-    void saveSnapshot(long ID, ArrayList<GraphicalObject> list) {
-        ArrayList<GraphicalObject> newList = new ArrayList<>(list.size());
-        for (GraphicalObject go : list) {
-            newList.add(go.clone());
-        }
+    void saveSnapshot(long ID, ConcurrentHashMap<Long, GraphicalObject> list) {
+        ConcurrentHashMap<Long, GraphicalObject> newList = new ConcurrentHashMap<>(list.size());
+        list.forEach((shapeID, go) -> newList.put(shapeID, go.clone()));
         map.put(ID, newList);
     }
 
@@ -54,8 +52,8 @@ class SnapshotSaver {
      * @param ID ID of snapshot being retrieved
      * @return List of GraphicalObjects saved in snapshot
      */
-    ArrayList<GraphicalObject> retrieveSnapshot(long ID) {
-        return map.getOrDefault(ID, new ArrayList<>());
+    ConcurrentHashMap<Long, GraphicalObject> retrieveSnapshot(long ID) {
+        return map.getOrDefault(ID, new ConcurrentHashMap<>());
     }
 
     /**
@@ -63,9 +61,9 @@ class SnapshotSaver {
      * fills it with information from the file.
      * @return A map of the snapshots
      */
-    private ConcurrentHashMap<Long, ArrayList<GraphicalObject>> loadSnapshotsFromFile() {
+    private ConcurrentHashMap<Long, ConcurrentHashMap<Long, GraphicalObject>> loadSnapshotsFromFile() {
         System.out.println("SnapshotSaver: Reading from file...");
-        ConcurrentHashMap<Long, ArrayList<GraphicalObject>> newMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Long, ConcurrentHashMap<Long, GraphicalObject>> newMap = new ConcurrentHashMap<>();
         try {
             // Open stream of file
             FileReader fileReader = new FileReader(PATH_TO_SNAPSHOTS);
@@ -76,7 +74,7 @@ class SnapshotSaver {
 
             // Prepare a "snapshot"
             long ID = 0;
-            ArrayList<GraphicalObject> list = new ArrayList<>();
+            ConcurrentHashMap<Long, GraphicalObject> list = new ConcurrentHashMap<>();
 
             // While file has lines
             while ((line = fileLines.readLine()) != null) {
@@ -89,13 +87,14 @@ class SnapshotSaver {
 
                     // Get new ID and list
                     ID = Long.parseLong(line.substring(3));
-                    list = new ArrayList<>();
+                    list = new ConcurrentHashMap<>();
                 }
                 // Add GraphicalObject to the list
                 else {
                     String[] data = line.split(":");
-                    long goID = Long.parseLong(data[0]);
-                    list.add(new GraphicalObject(goID, data[1]));
+                    long shapeID = Long.parseLong(data[0]);
+                    long clientID = Long.parseLong(data[1]);
+                    list.put(shapeID, new GraphicalObject(clientID, data[2]));
                 }
             }
             if (ID != 0) {
@@ -118,13 +117,11 @@ class SnapshotSaver {
             FileWriter fileWriter = new FileWriter(PATH_TO_SNAPSHOTS);
             PrintWriter writer = new PrintWriter(fileWriter);
             // Write each snapshot to file
-            map.forEach((id, list) -> {
+            map.forEach((id, map) -> {
                 // Print ID
                 writer.println("ID " + id);
                 // Then shape list
-                for (GraphicalObject go : list) {
-                    writer.println(go.getID() + ":" + go);
-                }
+                map.forEach((shapeID, go) -> writer.println(shapeID + ":" + go.getClientID() + ":" + go));
             });
             writer.close();
         } catch (IOException e) {

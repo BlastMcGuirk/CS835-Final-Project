@@ -6,6 +6,7 @@ import server.state.GraphicalObject;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * RMIBehavior uses RMI to interact with the server. In this case, it has a
@@ -108,14 +109,14 @@ public class RMIBehavior implements Behavior {
     }
 
     @Override
-    public ArrayList<GraphicalObject> getGraphicalObjects() {
+    public ConcurrentHashMap<Long, GraphicalObject> getGraphicalObjects() {
         try {
             return displayCanvas ? canvas.getShapeList() : canvas.getSnapshot(userID);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
         System.err.println("Cannot get shapes");
-        return new ArrayList<>();
+        return new ConcurrentHashMap<>();
     }
 
     /**

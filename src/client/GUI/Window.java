@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * JFrame for the GUI. The Window holds all the parts of the client.
@@ -156,9 +158,9 @@ public class Window extends JFrame {
      * Repaints the drawing surface and updates Drawn Shapes List
      */
     public void tellToRepaint() {
-        ArrayList<GraphicalObject> list = behavior.getGraphicalObjects();
-        drawnShapes.update(list);
-        drawingSurface.setShapesToDraw(list);
+        ConcurrentHashMap<Long, GraphicalObject> map = behavior.getGraphicalObjects();
+        drawnShapes.update(map);
+        drawingSurface.setShapesToDraw(map);
         repaint();
     }
 }

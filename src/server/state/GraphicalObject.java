@@ -11,8 +11,11 @@ import java.util.TimerTask;
  */
 public class GraphicalObject extends TimerTask implements Serializable {
 
-    // ID of client origin
-    private final long ID;
+    // clientID of the shape
+    private long shapeID;
+
+    // clientID of client origin
+    private final long clientID;
 
     // Type of shape to be drawn
     public enum ShapeType implements Serializable {Circle { public String toString() { return "Circle"; } },
@@ -29,12 +32,12 @@ public class GraphicalObject extends TimerTask implements Serializable {
     // Location on canvas
     private final Point p;
 
-    // Whether or not the GO is marked with client ID
-    private boolean marked;
+    // Whether or not the GO is marked with client clientID
+    private volatile boolean marked;
 
     /**
      * Constructor specifying each attribute
-     * @param ID ID of client that created the shape
+     * @param ID clientID of client that created the shape
      * @param type What shape it is
      * @param color The color of the shape
      * @param width The width of the shape
@@ -42,7 +45,7 @@ public class GraphicalObject extends TimerTask implements Serializable {
      * @param p Where the shape is located
      */
     public GraphicalObject(long ID, ShapeType type, Color color, int width, int height, Point p) {
-        this.ID = ID;
+        this.clientID = ID;
         this.type = type;
         this.color = color;
         this.width = width;
@@ -53,12 +56,12 @@ public class GraphicalObject extends TimerTask implements Serializable {
 
     /**
      * Constructor using a String (For socket connection and snapshots)
-     * @param ID ID of client that created the shape
+     * @param ID clientID of client that created the shape
      * @param value attributes of shape in order of:
      *              type, color, width, height, x, y
      */
     public GraphicalObject(long ID, String value) {
-        this.ID = ID;
+        this.clientID = ID;
         String[] parts = value.split(" ");
 
         // ShapeType
@@ -106,11 +109,18 @@ public class GraphicalObject extends TimerTask implements Serializable {
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public GraphicalObject clone() {
-        return new GraphicalObject(getID(), getType(), getColor(), getWidth(), getHeight(), getPoint());
+        return new GraphicalObject(getClientID(), getType(), getColor(), getWidth(), getHeight(), getPoint());
     }
 
-    public long getID() {
-        return ID;
+    public void setShapeID(long id) {
+        this.shapeID = id;
+    }
+    public long getShapeID() {
+        return shapeID;
+    }
+
+    public long getClientID() {
+        return clientID;
     }
 
     public ShapeType getType() {

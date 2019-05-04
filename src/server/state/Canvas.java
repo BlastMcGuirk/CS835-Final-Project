@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -17,19 +19,24 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Canvas implements CanvasInterface {
 
     // AtomicLong to generate new user ID atomically
-    private volatile AtomicLong userIdGenerator;
+    private AtomicLong userIdGenerator;
 
     // AtomicLong to update version number atomically
-    private volatile AtomicLong versionNumber;
+    private AtomicLong versionNumber;
+
+    // AtomicLong to give shapes an ID
+    private AtomicLong shapeIDGenerator;
 
     // List of all shapes on server
-    private ArrayList<GraphicalObject> shapeList;
+    private ConcurrentHashMap<Long, GraphicalObject> shapeList;
 
     // List of markers for last shape placed by client
+    private ConcurrentHashMap<Long, GraphicalObject> markerMap;
     private Timer markerTimer;
 
     // List of all in-use socket connections
     private ArrayList<Drawer> socketConnections;
+    private ConcurrentLinkedQueue<String> socketMessageQueue;
 
     // Snapshot services
     private SnapshotSaver snapshotSaver;
@@ -37,9 +44,13 @@ public class Canvas implements CanvasInterface {
     public Canvas() {
         userIdGenerator = new AtomicLong(0);
         versionNumber = new AtomicLong(0);
+        shapeIDGenerator = new AtomicLong(0);
 
-        shapeList = new ArrayList<>();
+        shapeList = new ConcurrentHashMap<>();
+        markerMap = new ConcurrentHashMap<>();
+
         socketConnections = new ArrayList<>();
+        socketMessageQueue = new ConcurrentLinkedQueue<>();
 
         markerTimer = new Timer();
 
@@ -99,23 +110,31 @@ public class Canvas implements CanvasInterface {
      */
     @Override
     public synchronized void addShape(GraphicalObject go) {
-        for (int i = shapeList.size() - 1; i >= 0; i--) {
-            GraphicalObject removeMarkerGO = shapeList.get(i);
-            if (removeMarkerGO.getID() == go.getID()) {
-                removeMarkerGO.setMarked(false);
-            }
+        GraphicalObject oldGO = markerMap.get(go.getClientID());
+        if (oldGO != null) {
+            oldGO.setMarked(false);
+            tellAllDrawers("UNMARK " + oldGO.getShapeID() + ":" + oldGO.getClientID());
         }
-        shapeList.add(go);
+        markerMap.put(go.getClientID(), go);
+
+        long shapeID = shapeIDGenerator.incrementAndGet();
+        shapeList.put(shapeID, go);
         go.setMarked(true);
         markerTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 go.run();
+                tellAllDrawers("UNMARK " + shapeID + ":" + go.getClientID());
                 versionNumber.incrementAndGet();
             }
         }, 3000);
-        tellAllDrawers("ADDED " + go.getID() + ":" + go.toString());
+        tellAllDrawers("ADDED " + shapeID + ":" + go.getClientID() + ":" + go.toString());
+        tellAllDrawers("MARK " + shapeID + ":" + go.getClientID());
         versionNumber.incrementAndGet();
+    }
+
+    public GraphicalObject lastShapeFromID(long id) {
+        return markerMap.get(id);
     }
 
     /**
@@ -134,7 +153,7 @@ public class Canvas implements CanvasInterface {
      */
     @Override
     public synchronized void removeAll(long ID) {
-        shapeList.removeIf(go -> go.getID() == ID);
+        shapeList.entrySet().removeIf(e -> e.getValue().getClientID() == ID);
         tellAllDrawers("REMOVED_FROM " + ID);
         versionNumber.incrementAndGet();
     }
@@ -145,8 +164,8 @@ public class Canvas implements CanvasInterface {
      */
     @Override
     public synchronized void undo(long ID) {
-        for (int i = shapeList.size() - 1; i >= 0; i--) {
-            if (shapeList.get(i).getID() == ID) {
+        for (long i = shapeList.size() - 1; i >= 0; i--) {
+            if (shapeList.get(i).getClientID() == ID) {
                 shapeList.remove(i);
                 break;
             }
@@ -159,7 +178,7 @@ public class Canvas implements CanvasInterface {
      * @return The list of shapes drawn by all clients
      */
     @Override
-    public synchronized ArrayList<GraphicalObject> getShapeList() {
+    public synchronized ConcurrentHashMap<Long, GraphicalObject> getShapeList() {
         return shapeList;
     }
 
@@ -178,7 +197,7 @@ public class Canvas implements CanvasInterface {
      * @return The list of shapes in the snapshot
      */
     @Override
-    public ArrayList<GraphicalObject> getSnapshot(long ID) {
+    public ConcurrentHashMap<Long, GraphicalObject> getSnapshot(long ID) {
         return snapshotSaver.retrieveSnapshot(ID);
     }
 
@@ -188,6 +207,7 @@ public class Canvas implements CanvasInterface {
      * @param message message to send to all socket connections
      */
     private void tellAllDrawers(String message) {
+
         socketConnections.forEach(d -> d.tell(message));
     }
 }

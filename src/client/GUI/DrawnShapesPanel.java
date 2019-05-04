@@ -5,6 +5,7 @@ import server.state.GraphicalObject;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The Drawn Shapes panel displays the info of the shapes being
@@ -14,7 +15,7 @@ import java.util.ArrayList;
  */
 class DrawnShapesPanel extends JScrollPane {
 
-    private JList<String> goJList;
+    private JList<GraphicalObject> goJList;
 
     DrawnShapesPanel() {
         goJList = new JList<>();
@@ -26,12 +27,10 @@ class DrawnShapesPanel extends JScrollPane {
      * Updates the displayed list with a list of GraphicalObjects
      * @param goList list of objects to show their information
      */
-    void update(ArrayList<GraphicalObject> goList) {
+    void update(ConcurrentHashMap<Long, GraphicalObject> goList) {
         // update if changes are made on server
-        DefaultListModel<String> dlm = new DefaultListModel<>();
-        for (GraphicalObject go : goList) {
-            dlm.addElement(go.displayString());
-        }
+        DefaultListModel<GraphicalObject> dlm = new DefaultListModel<>();
+        goList.forEach((shapeID, go) -> dlm.addElement(go));
         goJList.setModel(dlm);
     }
 

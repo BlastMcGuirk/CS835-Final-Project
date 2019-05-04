@@ -4,6 +4,7 @@ import client.GUI.Window;
 import server.state.GraphicalObject;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The Behavior interface is used to specify what the client should do when
@@ -64,7 +65,7 @@ public interface Behavior {
      * or a snapshot
      * @return Current working GraphicalObject list
      */
-    ArrayList<GraphicalObject> getGraphicalObjects();
+    ConcurrentHashMap<Long, GraphicalObject> getGraphicalObjects();
 
     /**
      * Used as a shutdown hook, it disconnects from the server. Not all
