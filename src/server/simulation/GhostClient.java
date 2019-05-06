@@ -37,7 +37,7 @@ public class GhostClient implements Runnable {
             if (activityPercentage == 50) {
                 time += 8;
             } else {
-                time += 2;
+                time += 3;
             }
             try {
                 Thread.sleep(time * 1000);
@@ -49,14 +49,12 @@ public class GhostClient implements Runnable {
             int randomAction = random.nextInt(100);
 
             int doAction;
-            if (randomAction < 60) {
+            if (randomAction < 75) {
                 doAction = 1;
-            } else if (randomAction < 75) {
-                doAction = 2;
             } else if (randomAction < 90) {
-                doAction = 3;
+                doAction = 2;
             } else {
-                doAction = 4;
+                doAction = 3;
             }
             switch (doAction) {
                 case 1:
@@ -74,13 +72,6 @@ public class GhostClient implements Runnable {
                     }
                     break;
                 case 3:
-                    try {
-                        canvas.undo(id);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case 4:
                     try {
                         canvas.removeAll();
                     } catch (RemoteException e) {

@@ -7,9 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -24,7 +22,7 @@ public class Window extends JFrame {
     private DrawingSurfacePanel drawingSurface;
     private DrawnShapesPanel drawnShapes;
     private GOInfoPanel infoPanel;
-    private JButton removeYours, removeAll, undo;
+    private JButton removeYours, removeAll;
     private JButton saveSnapshot, getSnapshot, getCanvas;
 
     public Window(Behavior behavior){
@@ -45,12 +43,6 @@ public class Window extends JFrame {
         removeAll.addActionListener(e -> {
             if (behavior.isCanvasMode())
                 behavior.removeAll();
-        });
-
-        undo = new JButton("Undo");
-        undo.addActionListener(e -> {
-            if (behavior.isCanvasMode())
-                behavior.undo();
         });
 
         saveSnapshot = new JButton("Save Snapshot");
@@ -74,7 +66,7 @@ public class Window extends JFrame {
         // Initialize GUI panels
         infoPanel = new GOInfoPanel();
 
-        drawnShapes = new DrawnShapesPanel();
+        drawnShapes = new DrawnShapesPanel(behavior);
 
         drawingSurface = new DrawingSurfacePanel();
         drawingSurface.addMouseListener(new MouseListener() {
@@ -135,12 +127,10 @@ public class Window extends JFrame {
         cp.add(infoPanel, gc);
 
         // Add Buttons
-        gc.gridx = 0; gc.gridy = 15; gc.gridwidth = 5; gc.gridheight = 1;
+        gc.gridx = 2; gc.gridy = 15; gc.gridwidth = 5; gc.gridheight = 1;
         cp.add(removeYours, gc);
-        gc.gridx = 5;
+        gc.gridx = 8;
         cp.add(removeAll, gc);
-        gc.gridx = 10;
-        cp.add(undo, gc);
         gc.gridx = 0; gc.gridy = 16;
         cp.add(saveSnapshot, gc);
         gc.gridx = 5;
@@ -158,9 +148,11 @@ public class Window extends JFrame {
      * Repaints the drawing surface and updates Drawn Shapes List
      */
     public void tellToRepaint() {
-        ConcurrentHashMap<Long, GraphicalObject> map = behavior.getGraphicalObjects();
-        drawnShapes.update(map);
-        drawingSurface.setShapesToDraw(map);
-        repaint();
+        SwingUtilities.invokeLater(() -> {
+            ConcurrentHashMap<Long, GraphicalObject> map = behavior.getGraphicalObjects();
+            drawnShapes.update(map);
+            drawingSurface.setShapesToDraw(map);
+            repaint();
+        });
     }
 }

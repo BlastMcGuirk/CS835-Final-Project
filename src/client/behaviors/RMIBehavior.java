@@ -5,7 +5,6 @@ import server.state.CanvasInterface;
 import server.state.GraphicalObject;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -51,6 +50,15 @@ public class RMIBehavior implements Behavior {
     }
 
     @Override
+    public void editShape(GraphicalObject go, GraphicalObject.ShapeType type, String color, int width, int height) {
+        try {
+            canvas.editShape(go.getShapeID(), userID, type, color, width, height);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void removeYours() {
         try {
             canvas.removeAll(userID);
@@ -63,15 +71,6 @@ public class RMIBehavior implements Behavior {
     public void removeAll() {
         try {
             canvas.removeAll();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void undo() {
-        try {
-            canvas.undo(userID);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

@@ -5,10 +5,7 @@ import server.state.GraphicalObject;
 
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -16,9 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * uses the following protocol:
  *      The client can send the following messages to the server:
  *          ADD <GO>
+ *          EDIT <S#>:<GO>
  *          REMOVE_MINE
  *          REMOVE_ALL
- *          UNDO
  *          SAVE_SNAPSHOT
  *          LOAD_SNAPSHOT
  *          LOAD_CANVAS
@@ -26,15 +23,15 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  *      The server can send the following messages to the client:
  *          WELCOME <ID>
- *          ADDED <ID>:<GO>
+ *          ADDED <S#>:<ID>:<GO>
+ *          EDITED <S#>:<ID>:<GO>
  *          REMOVED_FROM <ID>
  *          REMOVED_ALL
- *          UNDID <ID>
  *          GETTING_SNAPSHOT <# GOs>
  *          GETTING_CANVAS <# GOs>
- *          SH <ID>:<GO>
- *          MARK <SHAPE_ID> <CLIENT_ID>
- *          UNMARK <SHAPE_ID> <CLIENT_ID>
+ *          SH <S#>:<ID>:<GO>
+ *          MARK <SHAPE_ID>:<CLIENT_ID>
+ *          UNMARK <SHAPE_ID>:<CLIENT_ID>
  */
 public class SocketBehavior implements Behavior{
 
@@ -72,6 +69,12 @@ public class SocketBehavior implements Behavior{
     }
 
     @Override
+    public void editShape(GraphicalObject go, GraphicalObject.ShapeType type, String color, int width, int height) {
+        System.out.println("EDITING");
+        out.println("EDIT " + go.getShapeID() + ":" + type + " " + color + " " + width + " " + height);
+    }
+
+    @Override
     public void removeYours() {
         out.println("REMOVE_MINE");
     }
@@ -79,11 +82,6 @@ public class SocketBehavior implements Behavior{
     @Override
     public void removeAll() {
         out.println("REMOVE_ALL");
-    }
-
-    @Override
-    public void undo() {
-        out.println("UNDO");
     }
 
     @Override
@@ -142,6 +140,7 @@ public class SocketBehavior implements Behavior{
             while (in.hasNextLine()) {
                 // Get next line
                 String response = in.nextLine();
+                System.out.println(response);
 
                 // If it starts with GETTING, it's switching between canvas and snapshot
                 if (response.startsWith("GETTING")) {
@@ -157,7 +156,9 @@ public class SocketBehavior implements Behavior{
                         String[] shapeValues = newShape.substring(3).split(":");
                         long shapeID = Long.parseLong(shapeValues[0]);
                         long clientID = Long.parseLong(shapeValues[1]);
-                        goList.put(shapeID, new GraphicalObject(clientID, shapeValues[1]));
+                        GraphicalObject newGO = new GraphicalObject(clientID, shapeValues[2]);
+                        newGO.setShapeID(shapeID);
+                        goList.put(shapeID, newGO);
                     }
                     // Repaint the canvas
                     w.tellToRepaint();
@@ -173,6 +174,16 @@ public class SocketBehavior implements Behavior{
                         long shapeID = Long.parseLong(responseValues[0]);
                         long clientID = Long.parseLong(responseValues[1]);
                         GraphicalObject go = new GraphicalObject(clientID, responseValues[2]);
+                        go.setShapeID(shapeID);
+                        goList.put(shapeID, go);
+                    }
+                    // Shape was edited
+                    else if (response.startsWith("EDITED")) {
+                        String[] responseValues = response.substring(7).split(":");
+                        long shapeID = Long.parseLong(responseValues[0]);
+                        long clientID = Long.parseLong(responseValues[1]);
+                        GraphicalObject go = new GraphicalObject(clientID, responseValues[2]);
+                        go.setShapeID(shapeID);
                         goList.put(shapeID, go);
                     }
                     // All shapes with specified ID were removed from canvas
@@ -183,25 +194,13 @@ public class SocketBehavior implements Behavior{
                     // All shapes were removed from canvas
                     else if (response.startsWith("REMOVED_ALL")) {
                         goList.clear();
-                    }
-                    // Last shape added by specified ID was removed
-                    else if (response.startsWith("UNDID")) {
-                        long idValue = Long.parseLong(response.substring(6));
-                        for (int i = goList.size() - 1; i >= 0; i--) {
-                            if (goList.get(i).getClientID() == idValue) {
-                                goList.remove(i);
-                                break;
-                            }
-                        }
                     } else if (response.startsWith("MARK")) {
                         String[] responseValues = response.substring(5).split(":");
                         long shapeID = Long.parseLong(responseValues[0]);
-                        long clientID = Long.parseLong(responseValues[1]);
                         goList.get(shapeID).setMarked(true);
                     } else if (response.startsWith("UNMARK")) {
                         String[] responseValues = response.substring(7).split(":");
                         long shapeID = Long.parseLong(responseValues[0]);
-                        long clientID = Long.parseLong(responseValues[1]);
                         GraphicalObject markedGo = goList.get(shapeID);
                         if (markedGo != null) {
                             markedGo.setMarked(false);

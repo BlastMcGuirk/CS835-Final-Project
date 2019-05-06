@@ -3,7 +3,6 @@ package client.behaviors;
 import client.GUI.Window;
 import server.state.GraphicalObject;
 
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,6 +18,8 @@ public interface Behavior {
      */
     void addShape(GraphicalObject go);
 
+    void editShape(GraphicalObject go, GraphicalObject.ShapeType type, String color, int width, int height);
+
     /**
      * Removes all of client's shapes from server
      */
@@ -28,11 +29,6 @@ public interface Behavior {
      * Removes all shapes from server
      */
     void removeAll();
-
-    /**
-     * Removes client's last shape from server
-     */
-    void undo();
 
     /**
      * Saves a snapshot of the current server, saves it on server

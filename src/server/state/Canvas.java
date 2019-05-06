@@ -118,6 +118,7 @@ public class Canvas implements CanvasInterface {
         markerMap.put(go.getClientID(), go);
 
         long shapeID = shapeIDGenerator.incrementAndGet();
+        go.setShapeID(shapeID);
         shapeList.put(shapeID, go);
         go.setMarked(true);
         markerTimer.schedule(new TimerTask() {
@@ -133,8 +134,35 @@ public class Canvas implements CanvasInterface {
         versionNumber.incrementAndGet();
     }
 
-    public GraphicalObject lastShapeFromID(long id) {
-        return markerMap.get(id);
+    @Override
+    public void editShape(long shapeID, long newClientID, GraphicalObject.ShapeType type, String color, int width, int height) {
+        GraphicalObject go = shapeList.get(shapeID);
+        assert go != null;
+        System.out.println("GETTING TO EDIT: " + shapeID + " : " + newClientID + " : " + type + " " + color + " " + width + " " + height);
+        System.out.println(go);
+        go.edit(newClientID, type, color, width, height);
+
+        GraphicalObject oldGO = markerMap.get(go.getClientID());
+        if (oldGO != null) {
+            oldGO.setMarked(false);
+            tellAllDrawers("UNMARK " + oldGO.getShapeID() + ":" + oldGO.getClientID());
+        }
+        markerMap.put(go.getClientID(), go);
+
+        System.out.println("DONE EDITING?");
+
+        go.setMarked(true);
+        markerTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                go.run();
+                tellAllDrawers("UNMARK " + shapeID + ":" + go.getClientID());
+                versionNumber.incrementAndGet();
+            }
+        }, 3000);
+        tellAllDrawers("EDITED " + shapeID + ":" + go.getClientID() + ":" + go.toString());
+        tellAllDrawers("MARK " + shapeID + ":" + go.getClientID());
+        versionNumber.incrementAndGet();
     }
 
     /**
@@ -155,22 +183,6 @@ public class Canvas implements CanvasInterface {
     public synchronized void removeAll(long ID) {
         shapeList.entrySet().removeIf(e -> e.getValue().getClientID() == ID);
         tellAllDrawers("REMOVED_FROM " + ID);
-        versionNumber.incrementAndGet();
-    }
-
-    /**
-     * Removes the last shape with ID from the shape list (if one exists)
-     * @param ID ID of the shape to be removed
-     */
-    @Override
-    public synchronized void undo(long ID) {
-        for (long i = shapeList.size() - 1; i >= 0; i--) {
-            if (shapeList.get(i).getClientID() == ID) {
-                shapeList.remove(i);
-                break;
-            }
-        }
-        tellAllDrawers("UNDID " + ID);
         versionNumber.incrementAndGet();
     }
 

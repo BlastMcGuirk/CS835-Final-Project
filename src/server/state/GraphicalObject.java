@@ -15,19 +15,19 @@ public class GraphicalObject extends TimerTask implements Serializable {
     private long shapeID;
 
     // clientID of client origin
-    private final long clientID;
+    private long clientID;
 
     // Type of shape to be drawn
     public enum ShapeType implements Serializable {Circle { public String toString() { return "Circle"; } },
                         Triangle { public String toString() { return "Triangle"; } },
                         Rectangle { public String toString() { return "Rectangle"; } } }
-    private final ShapeType type;
+    private ShapeType type;
 
     // Values of width and height
-    private final int width, height;
+    private int width, height;
 
     // Color of shape
-    private final Color color;
+    private Color color;
 
     // Location on canvas
     private final Point p;
@@ -80,26 +80,22 @@ public class GraphicalObject extends TimerTask implements Serializable {
         }
 
         // Color
-        switch (parts[1]) {
-            case "Black":
-                color = Color.BLACK;
-                break;
-            case "Red":
-                color = Color.RED;
-                break;
-            case "Green":
-                color = Color.GREEN;
-                break;
-            case "Blue":
-                color = Color.BLUE;
-                break;
-            default:
-                color = Color.BLACK;
-        }
+        color = getNameColor(parts[1]);
 
+        // Width/Height
         width = Integer.parseInt(parts[2]);
         height = Integer.parseInt(parts[3]);
+
+        // Point
         p = new Point(Integer.parseInt(parts[4]), Integer.parseInt(parts[5]));
+    }
+
+    synchronized void edit(long clientID, ShapeType type, String color, int width, int height) {
+        this.clientID = clientID;
+        this.type = type;
+        this.color = getNameColor(color);
+        this.width = width;
+        this.height = height;
     }
 
     /**
@@ -142,12 +138,27 @@ public class GraphicalObject extends TimerTask implements Serializable {
     /**
      * @return The name of the color, used for readability
      */
-    private String getColorName() {
+    public String getColorName() {
         if (color.equals(new Color(0, 0, 0))) return "Black";
         if (color.equals(new Color(255, 0, 0))) return "Red";
         if (color.equals(new Color(0, 255, 0))) return "Green";
         if (color.equals(new Color(0, 0, 255))) return "Blue";
         return "BLACK";
+    }
+
+    private Color getNameColor(String s) {
+        switch (s) {
+            case "Black":
+                return Color.BLACK;
+            case "Red":
+                return Color.RED;
+            case "Green":
+                return Color.GREEN;
+            case "Blue":
+                return Color.BLUE;
+            default:
+                return Color.BLACK;
+        }
     }
 
     public Point getPoint() {
@@ -165,13 +176,6 @@ public class GraphicalObject extends TimerTask implements Serializable {
     @Override
     public void run() {
         marked = false;
-    }
-
-    /**
-     * @return The string displayed in DrawnShapesPanel
-     */
-    public String displayString() {
-        return getColorName() + " " + type.toString() + ": [" + width + "x" + height + "] (" + p.x + ", " + p.y + ")";
     }
 
     /**

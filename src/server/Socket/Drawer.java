@@ -6,7 +6,6 @@ import server.state.GraphicalObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -80,15 +79,33 @@ public class Drawer implements Runnable {
                     // Adds shape to canvas
                     GraphicalObject go = new GraphicalObject(ID, command.substring(4));
                     canvas.addShape(go);
+                } else if (command.startsWith("EDIT")) {
+                    System.out.println("ALSO EDITING");
+                    // Edit shape
+                    String[] commandArgs = command.substring(5).split(":");
+                    String[] shapeArgs = commandArgs[1].split(" ");
+                    long shapeID = Long.parseLong(commandArgs[0]);
+                    GraphicalObject.ShapeType type = null;
+                    switch (shapeArgs[0]) {
+                        case "Circle":
+                            type = GraphicalObject.ShapeType.Circle;
+                            break;
+                        case "Triangle":
+                            type = GraphicalObject.ShapeType.Triangle;
+                            break;
+                        case "Rectangle":
+                            type = GraphicalObject.ShapeType.Rectangle;
+                            break;
+                    }
+                    int width = Integer.parseInt(shapeArgs[2]);
+                    int height = Integer.parseInt(shapeArgs[3]);
+                    canvas.editShape(shapeID, ID, type, shapeArgs[1], width, height);
                 } else if (command.startsWith("REMOVE_MINE")) {
                     // Removes shapes with client ID
                     canvas.removeAll(ID);
                 } else if (command.startsWith("REMOVE_ALL")) {
                     // Removes all shapes from canvas
                     canvas.removeAll();
-                } else if (command.startsWith("UNDO")) {
-                    // Removes last shape drawn by client
-                    canvas.undo(ID);
                 } else if (command.startsWith("SAVE_SNAPSHOT")) {
                     // Saves a snapshot of the current state of the canvas
                     System.out.println("Saving snapshot for ID: " + ID);

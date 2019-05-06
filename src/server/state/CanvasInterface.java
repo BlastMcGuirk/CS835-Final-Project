@@ -5,7 +5,6 @@ import server.Socket.Drawer;
 import java.net.Socket;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public interface CanvasInterface extends Remote {
@@ -15,9 +14,9 @@ public interface CanvasInterface extends Remote {
     Drawer newSocketConnection(Socket socket) throws RemoteException;
     void removeSocketConnection(Drawer drawer) throws RemoteException;
     void addShape(GraphicalObject go) throws RemoteException;
+    void editShape(long shapeID, long newClientID, GraphicalObject.ShapeType type, String color, int width, int height) throws RemoteException;
     void removeAll() throws RemoteException;
     void removeAll(long ID) throws RemoteException;
-    void undo(long ID) throws RemoteException;
     ConcurrentHashMap<Long, GraphicalObject> getShapeList() throws RemoteException;
     void saveSnapshot(long ID) throws RemoteException;
     ConcurrentHashMap<Long, GraphicalObject> getSnapshot(long ID) throws RemoteException;
