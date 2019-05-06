@@ -6,8 +6,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -16,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * keeps track of it's version, holds socket connections, and
  * can make calls to the Snapshot Manager.
  */
-public class Canvas implements CanvasInterface {
+public class Canvas implements CanvasInterface, Runnable {
 
     // AtomicLong to generate new user ID atomically
     private AtomicLong userIdGenerator;
@@ -36,7 +35,9 @@ public class Canvas implements CanvasInterface {
 
     // List of all in-use socket connections
     private ArrayList<Drawer> socketConnections;
-    private ConcurrentLinkedQueue<String> socketMessageQueue;
+    private final ConcurrentLinkedQueue<String> socketMessageQueue;
+    private Executor exec;
+    private volatile boolean isRunning;
 
     // Snapshot services
     private SnapshotSaver snapshotSaver;
@@ -51,6 +52,7 @@ public class Canvas implements CanvasInterface {
 
         socketConnections = new ArrayList<>();
         socketMessageQueue = new ConcurrentLinkedQueue<>();
+        exec = Executors.newFixedThreadPool(10);
 
         markerTimer = new Timer();
 
@@ -138,8 +140,6 @@ public class Canvas implements CanvasInterface {
     public void editShape(long shapeID, long newClientID, GraphicalObject.ShapeType type, String color, int width, int height) {
         GraphicalObject go = shapeList.get(shapeID);
         assert go != null;
-        System.out.println("GETTING TO EDIT: " + shapeID + " : " + newClientID + " : " + type + " " + color + " " + width + " " + height);
-        System.out.println(go);
         go.edit(newClientID, type, color, width, height);
 
         GraphicalObject oldGO = markerMap.get(go.getClientID());
@@ -148,8 +148,6 @@ public class Canvas implements CanvasInterface {
             tellAllDrawers("UNMARK " + oldGO.getShapeID() + ":" + oldGO.getClientID());
         }
         markerMap.put(go.getClientID(), go);
-
-        System.out.println("DONE EDITING?");
 
         go.setMarked(true);
         markerTimer.schedule(new TimerTask() {
@@ -219,7 +217,28 @@ public class Canvas implements CanvasInterface {
      * @param message message to send to all socket connections
      */
     private void tellAllDrawers(String message) {
+        synchronized (socketMessageQueue) {
+            socketMessageQueue.add(message);
+        }
+        if (!isRunning) {
+            isRunning = true;
+            exec.execute(this);
+        }
+    }
 
-        socketConnections.forEach(d -> d.tell(message));
+    @Override
+    public void run() {
+        int numToSend = socketMessageQueue.size();
+        for (int i = 0; i < numToSend; i++) {
+            String messageToSend = socketMessageQueue.poll();
+            socketConnections.forEach(sc -> sc.tell(messageToSend));
+        }
+        synchronized (socketMessageQueue) {
+            if (socketMessageQueue.isEmpty()) {
+                isRunning = false;
+            } else {
+                exec.execute(this);
+            }
+        }
     }
 }

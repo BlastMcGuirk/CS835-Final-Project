@@ -65,38 +65,51 @@ public class SocketBehavior implements Behavior{
 
     @Override
     public void addShape(GraphicalObject go) {
-        out.println("ADD " + go.toString());
+        String message = "ADD " + go.toString();
+        outputMessage(message);
+        out.println(message);
     }
 
     @Override
     public void editShape(GraphicalObject go, GraphicalObject.ShapeType type, String color, int width, int height) {
-        System.out.println("EDITING");
-        out.println("EDIT " + go.getShapeID() + ":" + type + " " + color + " " + width + " " + height);
+        String message = "EDIT " + go.getShapeID() + ":" + type + " " + color + " " + width + " " + height;
+        outputMessage(message);
+        out.println(message);
     }
 
     @Override
     public void removeYours() {
-        out.println("REMOVE_MINE");
+        String message = "REMOVE_MINE";
+        outputMessage(message);
+        out.println(message);
     }
 
     @Override
     public void removeAll() {
-        out.println("REMOVE_ALL");
+        String message = "REMOVE_ALL";
+        outputMessage(message);
+        out.println(message);
     }
 
     @Override
     public void saveSnapshot() {
-        out.println("SAVE_SNAPSHOT");
+        String message = "SAVE_SNAPSHOT";
+        outputMessage(message);
+        out.println(message);
     }
 
     @Override
     public void loadSnapshot() {
-        out.println("LOAD_SNAPSHOT");
+        String message = "LOAD_SNAPSHOT";
+        outputMessage(message);
+        out.println(message);
     }
 
     @Override
     public void loadCurrentCanvas() {
-        out.println("LOAD_CANVAS");
+        String message = "LOAD_CANVAS";
+        outputMessage(message);
+        out.println(message);
     }
 
     @Override
@@ -107,6 +120,10 @@ public class SocketBehavior implements Behavior{
     @Override
     public long getId() {
         return userID;
+    }
+
+    private void outputMessage(String m) {
+        System.out.println("  ---> " + m);
     }
 
     /**
@@ -126,7 +143,7 @@ public class SocketBehavior implements Behavior{
     @Override
     public void disconnect() {
         // Run as a shutdown hook
-        System.out.println("Disconnecting");
+        System.out.println(" ---> EXIT");
         out.println("EXIT");
     }
 
@@ -140,7 +157,7 @@ public class SocketBehavior implements Behavior{
             while (in.hasNextLine()) {
                 // Get next line
                 String response = in.nextLine();
-                System.out.println(response);
+                System.out.println("<--- " + response);
 
                 // If it starts with GETTING, it's switching between canvas and snapshot
                 if (response.startsWith("GETTING")) {

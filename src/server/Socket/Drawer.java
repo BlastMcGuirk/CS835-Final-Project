@@ -80,7 +80,6 @@ public class Drawer implements Runnable {
                     GraphicalObject go = new GraphicalObject(ID, command.substring(4));
                     canvas.addShape(go);
                 } else if (command.startsWith("EDIT")) {
-                    System.out.println("ALSO EDITING");
                     // Edit shape
                     String[] commandArgs = command.substring(5).split(":");
                     String[] shapeArgs = commandArgs[1].split(" ");
