@@ -30,8 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *          GETTING_SNAPSHOT <# GOs>
  *          GETTING_CANVAS <# GOs>
  *          SH <S#>:<ID>:<GO>
- *          MARK <SHAPE_ID>:<CLIENT_ID>
- *          UNMARK <SHAPE_ID>:<CLIENT_ID>
+ *          MARK <SHAPE_ID>
+ *          UNMARK <SHAPE_ID>
  */
 public class SocketBehavior implements Behavior{
 

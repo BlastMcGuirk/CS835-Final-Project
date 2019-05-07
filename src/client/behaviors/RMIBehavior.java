@@ -61,7 +61,7 @@ public class RMIBehavior implements Behavior {
     @Override
     public void removeYours() {
         try {
-            canvas.removeAll(userID);
+            canvas.removeAllWithID(userID);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -70,7 +70,7 @@ public class RMIBehavior implements Behavior {
     @Override
     public void removeAll() {
         try {
-            canvas.removeAll();
+            canvas.removeAll(userID);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -110,7 +110,7 @@ public class RMIBehavior implements Behavior {
     @Override
     public ConcurrentHashMap<Long, GraphicalObject> getGraphicalObjects() {
         try {
-            return displayCanvas ? canvas.getShapeList() : canvas.getSnapshot(userID);
+            return displayCanvas ? canvas.getShapeMap() : canvas.getSnapshot(userID);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

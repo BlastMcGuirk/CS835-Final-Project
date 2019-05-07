@@ -15,9 +15,9 @@ public interface CanvasInterface extends Remote {
     void removeSocketConnection(Drawer drawer) throws RemoteException;
     void addShape(GraphicalObject go) throws RemoteException;
     void editShape(long shapeID, long newClientID, GraphicalObject.ShapeType type, String color, int width, int height) throws RemoteException;
-    void removeAll() throws RemoteException;
     void removeAll(long ID) throws RemoteException;
-    ConcurrentHashMap<Long, GraphicalObject> getShapeList() throws RemoteException;
+    void removeAllWithID(long ID) throws RemoteException;
+    ConcurrentHashMap<Long, GraphicalObject> getShapeMap() throws RemoteException;
     void saveSnapshot(long ID) throws RemoteException;
     ConcurrentHashMap<Long, GraphicalObject> getSnapshot(long ID) throws RemoteException;
 

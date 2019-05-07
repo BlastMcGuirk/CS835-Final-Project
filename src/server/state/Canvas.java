@@ -2,8 +2,12 @@ package server.state;
 
 import server.Socket.Drawer;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
@@ -27,7 +31,11 @@ public class Canvas implements CanvasInterface, Runnable {
     private AtomicLong shapeIDGenerator;
 
     // List of all shapes on server
-    private ConcurrentHashMap<Long, GraphicalObject> shapeList;
+    private ConcurrentHashMap<Long, GraphicalObject> shapeMap;
+
+    // Set of banned IDs
+    private HashSet<Long> bannedIDs;
+    private final Object bannedIDLock;
 
     // List of markers for last shape placed by client
     private ConcurrentHashMap<Long, GraphicalObject> markerMap;
@@ -47,7 +55,11 @@ public class Canvas implements CanvasInterface, Runnable {
         versionNumber = new AtomicLong(0);
         shapeIDGenerator = new AtomicLong(0);
 
-        shapeList = new ConcurrentHashMap<>();
+        shapeMap = new ConcurrentHashMap<>();
+
+        bannedIDs = new HashSet<>();
+        bannedIDLock = new Object();
+
         markerMap = new ConcurrentHashMap<>();
 
         socketConnections = new ArrayList<>();
@@ -111,66 +123,84 @@ public class Canvas implements CanvasInterface, Runnable {
      * @param go The shape being added
      */
     @Override
-    public synchronized void addShape(GraphicalObject go) {
-        GraphicalObject oldGO = markerMap.get(go.getClientID());
-        if (oldGO != null) {
-            oldGO.setMarked(false);
-            tellAllDrawers("UNMARK " + oldGO.getShapeID() + ":" + oldGO.getClientID());
+    public void addShape(GraphicalObject go) {
+        boolean canAddShape;
+        synchronized (bannedIDLock) {
+            canAddShape = !bannedIDs.contains(go.getClientID());
         }
-        markerMap.put(go.getClientID(), go);
-
-        long shapeID = shapeIDGenerator.incrementAndGet();
-        go.setShapeID(shapeID);
-        shapeList.put(shapeID, go);
-        go.setMarked(true);
-        markerTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                go.run();
-                tellAllDrawers("UNMARK " + shapeID + ":" + go.getClientID());
-                versionNumber.incrementAndGet();
+        if (canAddShape) {
+            GraphicalObject oldGO = markerMap.get(go.getClientID());
+            if (oldGO != null) {
+                oldGO.setMarked(false);
+                tellAllDrawers("UNMARK " + oldGO.getShapeID() + ":" + oldGO.getClientID());
             }
-        }, 3000);
-        tellAllDrawers("ADDED " + shapeID + ":" + go.getClientID() + ":" + go.toString());
-        tellAllDrawers("MARK " + shapeID + ":" + go.getClientID());
-        versionNumber.incrementAndGet();
+            markerMap.put(go.getClientID(), go);
+
+            long shapeID = shapeIDGenerator.incrementAndGet();
+            go.setShapeID(shapeID);
+            shapeMap.put(shapeID, go);
+            go.setMarked(true);
+            markerTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    go.run();
+                    tellAllDrawers("UNMARK " + shapeID + ":" + go.getClientID());
+                    versionNumber.incrementAndGet();
+                }
+            }, 3000);
+            tellAllDrawers("ADDED " + shapeID + ":" + go.getClientID() + ":" + go.toString());
+            tellAllDrawers("MARK " + shapeID + ":" + go.getClientID());
+            versionNumber.incrementAndGet();
+        }
     }
 
     @Override
     public void editShape(long shapeID, long newClientID, GraphicalObject.ShapeType type, String color, int width, int height) {
-        GraphicalObject go = shapeList.get(shapeID);
-        assert go != null;
-        go.edit(newClientID, type, color, width, height);
-
-        GraphicalObject oldGO = markerMap.get(go.getClientID());
-        if (oldGO != null) {
-            oldGO.setMarked(false);
-            tellAllDrawers("UNMARK " + oldGO.getShapeID() + ":" + oldGO.getClientID());
+        boolean canEditShape;
+        synchronized (bannedIDLock) {
+            canEditShape = !bannedIDs.contains(newClientID);
         }
-        markerMap.put(go.getClientID(), go);
+        if (canEditShape) {
+            GraphicalObject go = shapeMap.get(shapeID);
+            assert go != null;
+            go.edit(newClientID, type, color, width, height);
 
-        go.setMarked(true);
-        markerTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                go.run();
-                tellAllDrawers("UNMARK " + shapeID + ":" + go.getClientID());
-                versionNumber.incrementAndGet();
+            GraphicalObject oldGO = markerMap.get(go.getClientID());
+            if (oldGO != null) {
+                oldGO.setMarked(false);
+                tellAllDrawers("UNMARK " + oldGO.getShapeID() + ":" + oldGO.getClientID());
             }
-        }, 3000);
-        tellAllDrawers("EDITED " + shapeID + ":" + go.getClientID() + ":" + go.toString());
-        tellAllDrawers("MARK " + shapeID + ":" + go.getClientID());
-        versionNumber.incrementAndGet();
+            markerMap.put(go.getClientID(), go);
+
+            go.setMarked(true);
+            markerTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    go.run();
+                    tellAllDrawers("UNMARK " + shapeID + ":" + go.getClientID());
+                    versionNumber.incrementAndGet();
+                }
+            }, 3000);
+            tellAllDrawers("EDITED " + shapeID + ":" + go.getClientID() + ":" + go.toString());
+            tellAllDrawers("MARK " + shapeID + ":" + go.getClientID());
+            versionNumber.incrementAndGet();
+        }
     }
 
     /**
      * Removes all shapes from the shape list
      */
     @Override
-    public synchronized void removeAll() {
-        shapeList.clear();
-        tellAllDrawers("REMOVED_ALL");
-        versionNumber.incrementAndGet();
+    public void removeAll(long ID) {
+        boolean canRemoveAll;
+        synchronized (bannedIDLock) {
+            canRemoveAll = !bannedIDs.contains(ID);
+        }
+        if (canRemoveAll) {
+            shapeMap.clear();
+            tellAllDrawers("REMOVED_ALL");
+            versionNumber.incrementAndGet();
+        }
     }
 
     /**
@@ -178,18 +208,24 @@ public class Canvas implements CanvasInterface, Runnable {
      * @param ID ID of shapes to be removed
      */
     @Override
-    public synchronized void removeAll(long ID) {
-        shapeList.entrySet().removeIf(e -> e.getValue().getClientID() == ID);
-        tellAllDrawers("REMOVED_FROM " + ID);
-        versionNumber.incrementAndGet();
+    public void removeAllWithID(long ID) {
+        boolean canRemoveWithID;
+        synchronized (bannedIDLock) {
+            canRemoveWithID = !bannedIDs.contains(ID);
+        }
+        if (canRemoveWithID) {
+            shapeMap.entrySet().removeIf(e -> e.getValue().getClientID() == ID);
+            tellAllDrawers("REMOVED_FROM " + ID);
+            versionNumber.incrementAndGet();
+        }
     }
 
     /**
      * @return The list of shapes drawn by all clients
      */
     @Override
-    public synchronized ConcurrentHashMap<Long, GraphicalObject> getShapeList() {
-        return shapeList;
+    public ConcurrentHashMap<Long, GraphicalObject> getShapeMap() {
+        return shapeMap;
     }
 
     /**
@@ -197,8 +233,8 @@ public class Canvas implements CanvasInterface, Runnable {
      * @param ID ID of user saving the snapshot
      */
     @Override
-    public synchronized void saveSnapshot(long ID) {
-        snapshotSaver.saveSnapshot(ID, shapeList);
+    public void saveSnapshot(long ID) {
+        snapshotSaver.saveSnapshot(ID, shapeMap);
     }
 
     /**
@@ -224,6 +260,53 @@ public class Canvas implements CanvasInterface, Runnable {
             isRunning = true;
             exec.execute(this);
         }
+    }
+
+    public void ban(long id) {
+        synchronized (bannedIDLock) {
+            bannedIDs.add(id);
+        }
+        System.out.println("Banning user " + id);
+    }
+
+    public void unban(long id) {
+        synchronized (bannedIDLock) {
+            bannedIDs.remove(id);
+        }
+        System.out.println("Unbanning user " + id);
+    }
+
+    public void dumpStateToFile() {
+        System.out.println("Dumping state to file...");
+        try {
+            FileWriter fileWriter = new FileWriter("src/server/state/dumped_state.txt");
+            PrintWriter writer = new PrintWriter(fileWriter);
+
+            // Write all shapes to file
+            writer.println("Shapes:");
+            shapeMap.forEach((shapeID, shape) -> writer.println(shapeID + ":" + shape.getClientID() + ":" + shape));
+
+            // Write all banned users to file
+            writer.println("Banned Users:");
+            synchronized (bannedIDLock) {
+                bannedIDs.forEach((id) -> writer.println("ID: " + id));
+            }
+
+            writer.println("Snapshots:");
+            snapshotSaver.getMap().forEach((clientID, snapshot) -> {
+               writer.println("ID " + clientID);
+               snapshot.forEach((shapeID, shape) -> writer.println(shapeID + ":" + shape.getClientID() + ":" + shape));
+            });
+
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Done dumping to file!");
+    }
+
+    public void eraseSnapshots() {
+        snapshotSaver.eraseSnapshots();
     }
 
     @Override

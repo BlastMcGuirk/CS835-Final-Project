@@ -55,6 +55,14 @@ class SnapshotSaver {
         return map.getOrDefault(ID, new ConcurrentHashMap<>());
     }
 
+    ConcurrentHashMap<Long, ConcurrentHashMap<Long, GraphicalObject>> getMap() {
+        return map;
+    }
+
+    void eraseSnapshots() {
+        map.clear();
+    }
+
     /**
      * Helper method that loads snapshots from file. Creates a new map and
      * fills it with information from the file.

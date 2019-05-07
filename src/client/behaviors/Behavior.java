@@ -18,6 +18,14 @@ public interface Behavior {
      */
     void addShape(GraphicalObject go);
 
+    /**
+     * Edits a shape on the server
+     * @param go        the shape being edited
+     * @param type      the type to change the shape to
+     * @param color     the color to change the shape to
+     * @param width     the width to change the shape to
+     * @param height    the height to change the shape to
+     */
     void editShape(GraphicalObject go, GraphicalObject.ShapeType type, String color, int width, int height);
 
     /**

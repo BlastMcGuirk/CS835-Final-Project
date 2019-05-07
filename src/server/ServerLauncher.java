@@ -9,6 +9,7 @@ import server.state.CanvasInterface;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.rmi.RemoteException;
+import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -68,6 +69,25 @@ public class ServerLauncher {
         for (int i = 0; i < numGhostClients; i++) {
             GhostClient gc = new GhostClient(canvas, activityPercentage);
             threadPool.submit(gc);
+        }
+
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter your commands");
+        Canvas c = (Canvas) canvas;
+        while (scanner.hasNextLine()) {
+            String cmd = scanner.nextLine();
+            if (cmd.startsWith("ban")) {
+                long id = Long.parseLong(cmd.substring(4));
+                c.ban(id);
+            } else if (cmd.startsWith("unban")) {
+                long id = Long.parseLong(cmd.substring(6));
+                c.unban(id);
+            } else if (cmd.startsWith("dump")) {
+                c.dumpStateToFile();
+            } else if (cmd.startsWith("erase snapshots")) {
+                c.eraseSnapshots();
+            }
         }
     }
 

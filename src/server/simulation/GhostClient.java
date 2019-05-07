@@ -66,14 +66,14 @@ public class GhostClient implements Runnable {
                     break;
                 case 2:
                     try {
-                        canvas.removeAll(id);
+                        canvas.removeAllWithID(id);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
                     break;
                 case 3:
                     try {
-                        canvas.removeAll();
+                        canvas.removeAll(id);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }

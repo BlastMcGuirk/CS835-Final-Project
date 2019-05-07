@@ -101,10 +101,10 @@ public class Drawer implements Runnable {
                     canvas.editShape(shapeID, ID, type, shapeArgs[1], width, height);
                 } else if (command.startsWith("REMOVE_MINE")) {
                     // Removes shapes with client ID
-                    canvas.removeAll(ID);
+                    canvas.removeAllWithID(ID);
                 } else if (command.startsWith("REMOVE_ALL")) {
                     // Removes all shapes from canvas
-                    canvas.removeAll();
+                    canvas.removeAll(ID);
                 } else if (command.startsWith("SAVE_SNAPSHOT")) {
                     // Saves a snapshot of the current state of the canvas
                     System.out.println("Saving snapshot for ID: " + ID);
@@ -116,7 +116,7 @@ public class Drawer implements Runnable {
                     snapshotList.forEach((shapeID, go) -> output.println("SH " + shapeID + ":" + go.getClientID() + ":" + go));
                 } else if (command.startsWith("LOAD_CANVAS")) {
                     // Loads the current state of the canvas
-                    ConcurrentHashMap<Long, GraphicalObject> canvasList = canvas.getShapeList();
+                    ConcurrentHashMap<Long, GraphicalObject> canvasList = canvas.getShapeMap();
                     output.println("GETTING_CANVAS " + canvasList.size());
                     canvasList.forEach((shapeID, go) -> output.println("SH " + shapeID + ":" + go.getClientID() + ":" + go));
                 }
@@ -134,7 +134,7 @@ public class Drawer implements Runnable {
         output = new PrintWriter(socket.getOutputStream(), true);
 
         output.println("WELCOME " + ID);
-        canvas.getShapeList().forEach((shapeID, go) ->
+        canvas.getShapeMap().forEach((shapeID, go) ->
                 output.println("ADDED " + shapeID + ":" + go.getClientID() + ":" + go));
     }
 
