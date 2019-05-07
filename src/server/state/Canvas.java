@@ -43,6 +43,7 @@ public class Canvas implements CanvasInterface, Runnable {
 
     // List of all in-use socket connections
     private ArrayList<Drawer> socketConnections;
+    private final Object socketLock;
     private final ConcurrentLinkedQueue<String> socketMessageQueue;
     private Executor exec;
     private volatile boolean isRunning;
@@ -63,6 +64,8 @@ public class Canvas implements CanvasInterface, Runnable {
         markerMap = new ConcurrentHashMap<>();
 
         socketConnections = new ArrayList<>();
+        socketLock = new Object();
+
         socketMessageQueue = new ConcurrentLinkedQueue<>();
         exec = Executors.newFixedThreadPool(10);
 
@@ -103,7 +106,9 @@ public class Canvas implements CanvasInterface, Runnable {
     public Drawer newSocketConnection(Socket socket) {
         long idValue = registerNewUser();
         Drawer newDrawer = new Drawer(socket, idValue, this);
-        socketConnections.add(newDrawer);
+        synchronized (socketLock) {
+            socketConnections.add(newDrawer);
+        }
         System.out.println("New socket connection: " + newDrawer);
         return newDrawer;
     }
@@ -115,7 +120,9 @@ public class Canvas implements CanvasInterface, Runnable {
     @Override
     public void removeSocketConnection(Drawer drawer) {
         System.out.println("Disconnecting socket: " + drawer);
-        socketConnections.remove(drawer);
+        synchronized (socketLock) {
+            socketConnections.remove(drawer);
+        }
     }
 
     /**
@@ -311,10 +318,15 @@ public class Canvas implements CanvasInterface, Runnable {
 
     @Override
     public void run() {
-        int numToSend = socketMessageQueue.size();
+        int numToSend;
+        synchronized (socketMessageQueue) {
+            numToSend = socketMessageQueue.size();
+        }
         for (int i = 0; i < numToSend; i++) {
             String messageToSend = socketMessageQueue.poll();
-            socketConnections.forEach(sc -> sc.tell(messageToSend));
+            synchronized (socketLock) {
+                socketConnections.forEach(sc -> sc.tell(messageToSend));
+            }
         }
         synchronized (socketMessageQueue) {
             if (socketMessageQueue.isEmpty()) {
