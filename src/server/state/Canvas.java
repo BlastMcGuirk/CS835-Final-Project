@@ -206,7 +206,7 @@ public class Canvas implements CanvasInterface, Runnable {
         if (canRemoveAll) {
             shapeMap.clear();
             tellAllDrawers("REMOVED_ALL");
-            versionNumber.incrementAndGet();
+            versionNumber.set(0);
         }
     }
 

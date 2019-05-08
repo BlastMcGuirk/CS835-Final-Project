@@ -33,14 +33,14 @@ public class GhostClient implements Runnable {
         //noinspection InfiniteLoopStatement
         while (true) {
             // sleep for random amount of time
-            long time = random.nextInt(3);
+            long time = random.nextInt(3000);
             if (activityPercentage == 50) {
-                time += 8;
+                time += 8000;
             } else {
-                time += 3;
+                time += 3000;
             }
             try {
-                Thread.sleep(time * 1000);
+                Thread.sleep(time);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
