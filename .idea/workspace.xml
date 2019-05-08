@@ -8,10 +8,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5e09177e-7b5a-4b60-897d-69bcb91d5d95" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/server/test/Testing.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/simulation/GhostClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/simulation/GhostClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server/state/Canvas.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/state/Canvas.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/state/GraphicalObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/state/GraphicalObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/state/SnapshotSaver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/state/SnapshotSaver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/test/Testing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/test/Testing.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,44 +23,59 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/server/ServerLauncher.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="833">
-              <caret line="60" column="17" selection-start-line="60" selection-start-column="17" selection-end-line="60" selection-end-column="17" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/server/state/CanvasInterface.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="18" column="28" selection-start-line="18" selection-start-column="28" selection-end-line="18" selection-end-column="28" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/server/state/Canvas.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="256">
-              <caret line="198" column="7" lean-forward="true" selection-start-line="198" selection-start-column="7" selection-end-line="198" selection-end-column="7" />
+            <state relative-caret-position="119">
+              <caret line="137" column="26" lean-forward="true" selection-start-line="137" selection-start-column="26" selection-end-line="137" selection-end-column="26" />
               <folding>
-                <element signature="e#7512#7513#0" expanded="true" />
-                <element signature="e#7543#7544#0" expanded="true" />
-                <element signature="e#7713#7714#0" expanded="true" />
-                <element signature="e#7769#7770#0" expanded="true" />
-                <element signature="e#8032#8033#0" expanded="true" />
-                <element signature="e#8089#8090#0" expanded="true" />
-                <element signature="e#10043#10044#0" expanded="true" />
-                <element signature="e#10089#10090#0" expanded="true" />
+                <element signature="e#10094#10095#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/server/Socket/Drawer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="313">
+              <caret line="48" column="17" lean-forward="true" selection-start-line="48" selection-start-column="17" selection-end-line="48" selection-end-column="17" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/server/state/GraphicalObject.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="291">
+              <caret line="177" column="23" selection-start-line="177" selection-start-column="23" selection-end-line="177" selection-end-column="23" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#3098#3146#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/server/state/SnapshotSaver.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="170">
+              <caret line="29" column="29" selection-start-line="29" selection-start-column="12" selection-end-line="29" selection-end-column="29" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/server/state/snapshots.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="17">
+              <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
             </state>
           </provider>
         </entry>
@@ -79,8 +95,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/client/behaviors/RMIBehavior.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="314">
-              <caret line="127" lean-forward="true" selection-start-line="127" selection-end-line="127" />
+            <state relative-caret-position="2006">
+              <caret line="127" selection-start-line="127" selection-end-line="127" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -91,8 +107,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/client/behaviors/SocketBehavior.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="392">
-              <caret line="58" column="29" lean-forward="true" selection-start-line="58" selection-start-column="29" selection-end-line="58" selection-end-column="29" />
+            <state relative-caret-position="884">
+              <caret line="58" column="29" selection-start-line="58" selection-start-column="29" selection-end-line="58" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -103,8 +119,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/server/simulation/GhostClient.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="37" column="29" lean-forward="true" selection-start-line="37" selection-start-column="29" selection-end-line="37" selection-end-column="29" />
+            <state relative-caret-position="544">
+              <caret line="37" column="29" selection-start-line="37" selection-start-column="29" selection-end-line="37" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -115,8 +131,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/server/test/Testing.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="520">
-              <caret line="223" column="25" selection-start-line="223" selection-start-column="25" selection-end-line="223" selection-end-column="25" />
+            <state relative-caret-position="139">
+              <caret line="46" column="36" lean-forward="true" selection-start-line="46" selection-start-column="36" selection-end-line="46" selection-end-column="36" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -161,19 +177,19 @@
         <option value="$PROJECT_DIR$/src/server/RMI/RMIService.java" />
         <option value="$PROJECT_DIR$/src/server/state/snapshots.txt" />
         <option value="$PROJECT_DIR$/src/client/GUI/DrawnShapesPanel.java" />
-        <option value="$PROJECT_DIR$/src/server/state/GraphicalObject.java" />
         <option value="$PROJECT_DIR$/src/client/GUI/Window.java" />
         <option value="$PROJECT_DIR$/src/client/GUI/DrawingSurfacePanel.java" />
         <option value="$PROJECT_DIR$/src/client/behaviors/SocketBehavior.java" />
         <option value="$PROJECT_DIR$/src/server/Socket/Drawer.java" />
         <option value="$PROJECT_DIR$/src/client/behaviors/RMIBehavior.java" />
-        <option value="$PROJECT_DIR$/src/server/state/SnapshotSaver.java" />
         <option value="$PROJECT_DIR$/src/client/behaviors/Behavior.java" />
         <option value="$PROJECT_DIR$/src/server/state/dumped_state.txt" />
         <option value="$PROJECT_DIR$/src/server/ServerLauncher.java" />
         <option value="$PROJECT_DIR$/src/server/state/CanvasInterface.java" />
-        <option value="$PROJECT_DIR$/src/server/state/Canvas.java" />
         <option value="$PROJECT_DIR$/src/server/simulation/GhostClient.java" />
+        <option value="$PROJECT_DIR$/src/server/state/Canvas.java" />
+        <option value="$PROJECT_DIR$/src/server/state/SnapshotSaver.java" />
+        <option value="$PROJECT_DIR$/src/server/state/GraphicalObject.java" />
         <option value="$PROJECT_DIR$/src/server/test/Testing.java" />
       </list>
     </option>
@@ -189,18 +205,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="PackagesPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="CS835 Final Project" type="58d84e3e:PackageViewProjectNode" />
-              <item name="CS835 Final Project" type="616d4139:PackageViewModuleNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -278,6 +282,18 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="CS835 Final Project" type="58d84e3e:PackageViewProjectNode" />
+              <item name="CS835 Final Project" type="616d4139:PackageViewModuleNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -470,22 +486,17 @@
       <option name="project" value="LOCAL" />
       <updated>1557251181912</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Testing!">
+      <created>1557325485686</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1557325485686</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Testing - 2019.05.07 at 14h 52m 27s.xml">
-      <configuration name="Testing" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="Testing - 2019.05.07 at 14h 54m 33s.xml">
-      <configuration name="Testing" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="Testing - 2019.05.07 at 14h 56m 55s.xml">
-      <configuration name="Testing" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="Testing - 2019.05.07 at 16h 26m 30s.xml">
-      <configuration name="Testing" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="Testing - 2019.05.07 at 16h 28m 51s.xml">
       <configuration name="Testing" configurationId="JUnit" />
     </history-entry>
@@ -504,19 +515,31 @@
     <history-entry file="Testing - 2019.05.07 at 17h 38m 19s.xml">
       <configuration name="Testing" configurationId="JUnit" />
     </history-entry>
+    <history-entry file="Testing - 2019.05.08 at 10h 21m 28s.xml">
+      <configuration name="Testing" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="Testing - 2019.05.08 at 10h 23m 35s.xml">
+      <configuration name="Testing" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="Testing - 2019.05.08 at 14h 47m 02s.xml">
+      <configuration name="Testing" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="Testing - 2019.05.08 at 14h 47m 14s.xml">
+      <configuration name="Testing" configurationId="JUnit" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12579957" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18078668" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="UI Designer" order="3" />
       <window_info id="Favorites" order="4" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4924357" weight="0.32569557" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.48411497" visible="true" weight="0.23726977" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.48411497" visible="true" weight="0.23567921" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49924356" weight="0.39934534" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -545,7 +568,8 @@
     <MESSAGE value="concurrent queue for socket message delivery" />
     <MESSAGE value="added administration methods" />
     <MESSAGE value="added more synchronization" />
-    <option name="LAST_COMMIT_MESSAGE" value="added more synchronization" />
+    <MESSAGE value="Testing!" />
+    <option name="LAST_COMMIT_MESSAGE" value="Testing!" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/server/Socket/operations/UndoOperation.java" />
@@ -641,44 +665,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/state/SnapshotSaver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="31" column="8" selection-start-line="31" selection-start-column="8" selection-end-line="31" selection-end-column="8" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/server/state/dumped_state.txt" />
-    <entry file="file://$PROJECT_DIR$/src/server/state/snapshots.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="4" selection-start-line="7" selection-start-column="4" selection-end-line="7" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/state/GraphicalObject.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2350">
-          <caret line="178" column="5" selection-start-line="178" selection-start-column="5" selection-end-line="178" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/Socket/Drawer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="262">
-          <caret line="106" column="41" selection-start-line="106" selection-start-column="41" selection-end-line="106" selection-end-column="41" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/client/GUI/DrawingSurfacePanel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-584">
@@ -721,35 +708,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/client/behaviors/RMIBehavior.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="314">
-          <caret line="127" lean-forward="true" selection-start-line="127" selection-end-line="127" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/state/Canvas.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
-          <caret line="198" column="7" lean-forward="true" selection-start-line="198" selection-start-column="7" selection-end-line="198" selection-end-column="7" />
-          <folding>
-            <element signature="e#7512#7513#0" expanded="true" />
-            <element signature="e#7543#7544#0" expanded="true" />
-            <element signature="e#7713#7714#0" expanded="true" />
-            <element signature="e#7769#7770#0" expanded="true" />
-            <element signature="e#8032#8033#0" expanded="true" />
-            <element signature="e#8089#8090#0" expanded="true" />
-            <element signature="e#10043#10044#0" expanded="true" />
-            <element signature="e#10089#10090#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/simulation/GhostClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="37" column="29" lean-forward="true" selection-start-line="37" selection-start-column="29" selection-end-line="37" selection-end-column="29" />
+        <state relative-caret-position="2006">
+          <caret line="127" selection-start-line="127" selection-end-line="127" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -758,8 +718,66 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/client/behaviors/SocketBehavior.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="392">
-          <caret line="58" column="29" lean-forward="true" selection-start-line="58" selection-start-column="29" selection-end-line="58" selection-end-column="29" />
+        <state relative-caret-position="884">
+          <caret line="58" column="29" selection-start-line="58" selection-start-column="29" selection-end-line="58" selection-end-column="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/simulation/GhostClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="37" column="29" selection-start-line="37" selection-start-column="29" selection-end-line="37" selection-end-column="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/state/SnapshotSaver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="29" column="29" selection-start-line="29" selection-start-column="12" selection-end-line="29" selection-end-column="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/state/snapshots.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/state/GraphicalObject.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="177" column="23" selection-start-line="177" selection-start-column="23" selection-end-line="177" selection-end-column="23" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3098#3146#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/state/Canvas.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="137" column="26" lean-forward="true" selection-start-line="137" selection-start-column="26" selection-end-line="137" selection-end-column="26" />
+          <folding>
+            <element signature="e#10094#10095#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/Socket/Drawer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="313">
+          <caret line="48" column="17" lean-forward="true" selection-start-line="48" selection-start-column="17" selection-end-line="48" selection-end-column="17" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -768,8 +786,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/server/test/Testing.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
-          <caret line="223" column="25" selection-start-line="223" selection-start-column="25" selection-end-line="223" selection-end-column="25" />
+        <state relative-caret-position="139">
+          <caret line="46" column="36" lean-forward="true" selection-start-line="46" selection-start-column="36" selection-end-line="46" selection-end-column="36" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

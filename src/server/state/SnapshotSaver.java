@@ -55,12 +55,12 @@ class SnapshotSaver {
         return map.getOrDefault(ID, new ConcurrentHashMap<>());
     }
 
-    ConcurrentHashMap<Long, ConcurrentHashMap<Long, GraphicalObject>> getMap() {
-        return map;
-    }
-
     void eraseSnapshots() {
         map.clear();
+    }
+
+    ConcurrentHashMap<Long, ConcurrentHashMap<Long, GraphicalObject>> getMap() {
+        return map;
     }
 
     /**

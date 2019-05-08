@@ -36,19 +36,42 @@ class Testing {
 
     @Test
     void addShapesAtSameTime() throws InterruptedException {
+        CountDownLatch readyLatch = new CountDownLatch(3);
+        CountDownLatch gate = new CountDownLatch(1);
         CountDownLatch countDownLatch = new CountDownLatch(3);
         exec.submit(() -> {
+            readyLatch.countDown();
+            try {
+                gate.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             c.addShape(go1);
             countDownLatch.countDown();
         });
         exec.submit(() -> {
+            readyLatch.countDown();
+            try {
+                gate.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             c.addShape(go2);
             countDownLatch.countDown();
         });
         exec.submit(() -> {
+            readyLatch.countDown();
+            try {
+                gate.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             c.addShape(go3);
             countDownLatch.countDown();
         });
+        readyLatch.await();
+        Thread.sleep(1000);
+        gate.countDown();
         countDownLatch.await();
         Assertions.assertEquals(3, c.getShapeMap().size());
         Assertions.assertEquals(3, c.getVersionNumber());

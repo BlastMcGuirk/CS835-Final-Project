@@ -262,10 +262,10 @@ public class Canvas implements CanvasInterface, Runnable {
     private void tellAllDrawers(String message) {
         synchronized (socketMessageQueue) {
             socketMessageQueue.add(message);
-        }
-        if (!isRunning) {
-            isRunning = true;
-            exec.execute(this);
+            if (!isRunning) {
+                isRunning = true;
+                exec.execute(this);
+            }
         }
     }
 

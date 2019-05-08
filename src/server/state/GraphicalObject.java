@@ -33,7 +33,7 @@ public class GraphicalObject extends TimerTask implements Serializable {
     private final Point p;
 
     // Whether or not the GO is marked with client clientID
-    private volatile boolean marked;
+    private boolean marked;
 
     /**
      * Constructor specifying each attribute
@@ -104,41 +104,41 @@ public class GraphicalObject extends TimerTask implements Serializable {
      */
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public GraphicalObject clone() {
+    public synchronized GraphicalObject clone() {
         return new GraphicalObject(getClientID(), getType(), getColor(), getWidth(), getHeight(), getPoint());
     }
 
-    public void setShapeID(long id) {
+    public synchronized void setShapeID(long id) {
         this.shapeID = id;
     }
-    public long getShapeID() {
+    public synchronized long getShapeID() {
         return shapeID;
     }
 
-    public long getClientID() {
+    public synchronized long getClientID() {
         return clientID;
     }
 
-    public ShapeType getType() {
+    public synchronized ShapeType getType() {
         return type;
     }
 
-    public int getWidth() {
+    public synchronized int getWidth() {
         return width;
     }
 
-    public int getHeight() {
+    public synchronized int getHeight() {
         return height;
     }
 
-    public Color getColor() {
+    public synchronized Color getColor() {
         return color;
     }
 
     /**
      * @return The name of the color, used for readability
      */
-    public String getColorName() {
+    public synchronized String getColorName() {
         if (color.equals(new Color(0, 0, 0))) return "Black";
         if (color.equals(new Color(255, 0, 0))) return "Red";
         if (color.equals(new Color(0, 255, 0))) return "Green";
@@ -165,17 +165,17 @@ public class GraphicalObject extends TimerTask implements Serializable {
         return p;
     }
 
-    public void setMarked(boolean mark) {
+    public synchronized void setMarked(boolean mark) {
         this.marked = mark;
     }
 
-    public boolean isMarked() {
+    public synchronized boolean isMarked() {
         return marked;
     }
 
     @Override
     public void run() {
-        marked = false;
+        setMarked(false);
     }
 
     /**
